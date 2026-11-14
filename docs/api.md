@@ -29,7 +29,7 @@ Both return the same JSON bodies. Only the transport differs, and `api` in `web/
 
 ```json
 {"subheading":"…","notes":["…"],"formNote":"","orderNote":"","instagram":"myshop","messenger":"myshop","handles":["Instagram","Messenger"],"contactFields":["Email","Messenger","Instagram"],
- "theme":"default","themeColor":"#f4a259","accentColor":"","submitColor":"","open":true,
+ "theme":"default","themeColor":"#2f62c8","accentColor":"","submitColor":"","open":true,
  "closedMessage":"Pre-orders are closed. Thank you!","closesAt":"2026-12-01T16:00:00.000Z"}
 ```
 

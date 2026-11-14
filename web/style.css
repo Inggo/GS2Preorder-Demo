@@ -2,14 +2,18 @@
 :root {
   color-scheme: light;
 
-  --brand: #f4a259;
+  /* Each theme sets its own default --theme-brand; a shop's web/shop.css may set
+     --brand itself, and SETTINGS Primary Color overrides both. */
+  --theme-brand: #f4a259;
+  --theme-on-brand: var(--on-light);
+  --brand: var(--theme-brand);
 
   --paper: #ffffff;
   --ink: color-mix(in oklch, var(--brand) 14%, #1e1b16);
   --ink-soft: color-mix(in oklch, var(--ink) 70%, #ffffff);
   --accent: color-mix(in oklch, var(--brand) 52%, #000000);
   --on-light: var(--ink); /* dark text for light fills, whatever the theme */
-  --on-brand: var(--on-light);
+  --on-brand: var(--theme-on-brand);
   --dot: color-mix(in oklch, var(--brand) 22%, #d9d6d0);
   --pattern: #d9d9d9;
   --rule: color-mix(in oklch, var(--brand) 12%, #e7e4de);
@@ -701,6 +705,9 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
    clean, modern, one sans family. "dark" is the default layout in dark colors:
    it shares these rules and then recolors. app.js sets <html data-theme>. */
 :root:is([data-theme="default"], [data-theme="dark"]) {
+  --theme-brand: #2f62c8;
+  --theme-on-brand: #ffffff;
+  --paper: #fbfbfa;
   --sans: "Instrument Sans", system-ui, sans-serif;
   --serif: var(--sans);
   --ink: color-mix(in oklch, var(--brand) 8%, #1a1b1d);

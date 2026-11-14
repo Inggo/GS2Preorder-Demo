@@ -647,7 +647,10 @@ function applySettings(data) {
     localStorage.setItem(THEME_KEY, theme);
   } catch {}
   const root = document.documentElement.style;
-  if (isHex(data.themeColor)) root.setProperty("--brand", data.themeColor);
+  if (isHex(data.themeColor)) {
+    root.setProperty("--brand", data.themeColor);
+    root.setProperty("--on-brand", contrast(data.themeColor, "#ffffff") >= 4.5 ? "#ffffff" : "var(--on-light)");
+  }
   if (isHex(data.accentColor) && theme !== "dark") root.setProperty("--accent", data.accentColor); // chosen for white
   $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
   if (isHex(data.submitColor)) {
