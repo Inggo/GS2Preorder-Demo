@@ -14,6 +14,7 @@ customer ── GitHub Pages (web/: HTML/CSS/JS) ──► Apps Script web app �
 ```
 web/                  the site (no build step); published by .github/workflows/pages.yml
   config.js           ← the shop's Apps Script web app URL goes here
+  shop.css            ← the shop's own CSS overrides (empty in the starter)
   img/                resized product photos + index.json (made by photos.sh)
 apps-script/          the backend: Code.gs + appsscript.json, pasted into the sheet's script editor
 photos.sh             resizes the owner's photos/<SKU>.jpg into web/img/ (needs ImageMagick)

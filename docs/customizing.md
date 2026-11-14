@@ -1,6 +1,15 @@
 # Customizing a shop
 
-Most of a shop's look is set by the owner in SETTINGS (text, colors). These changes are per site and go in the shop's own repo.
+Most of a shop's look is set by the owner in SETTINGS (text, colors). Everything else below is a per-site change in the shop's own repo, never in the starter.
+
+## Keeping shops easy to update
+
+Shops pull starter updates with `git pull starter main`. Git merges them automatically unless the starter and the shop changed the same lines. So, in a shop repo:
+
+- **CSS goes only in `web/shop.css`.** It loads after `style.css`, so it can override anything, e.g. `:root { --brand: #ffb700; }`, a different `body::before` background, or logo sizing. Leave `style.css` exactly as the starter has it.
+- **`web/index.html`**: edit only what has to be per shop: `<head>` (title, description, `og:` tags, icons) and the name or logo in the masthead and top bar.
+- **New files** (logo, icons, `share.jpg`, background images) never conflict.
+- **Don't change `app.js` or `Code.gs` per shop.** If a shop needs a behavior, add it to the starter behind a SETTINGS row, so every shop gets it.
 
 ## Name and logo
 
@@ -15,7 +24,7 @@ Most of a shop's look is set by the owner in SETTINGS (text, colors). These chan
 
 ## Colors and design
 
-- All brand tones derive from `--brand` in `web/style.css` (fills: buttons, stepper, cart bar). The owner overrides it with SETTINGS **Theme Color**. `--accent` (links, Add buttons) is derived from it to stay readable on white, unless SETTINGS **Accent Color** sets it.
+- All brand tones derive from `--brand` (fills: buttons, stepper, cart bar). Its default is in `web/style.css`; a shop's own default goes in `web/shop.css`. SETTINGS **Theme Color** overrides both. `--accent` (links, Add buttons) is derived from it to stay readable on white, unless SETTINGS **Accent Color** sets it.
 - Category tapes cycle through `--tape-1…6`. The "New" section uses `--tape-new`.
 - The background is a light dot grid (`body::before`, `--pattern`).
 - Fonts: Young Serif (headings, prices) and Hanken Grotesk (everything else), from Google Fonts.

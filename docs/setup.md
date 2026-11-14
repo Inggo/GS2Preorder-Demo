@@ -97,6 +97,7 @@ Then:
    - `web/config.js`: paste the Web app URL into `api`.
    - `web/index.html`: the `<title>`, description and `og:` tags, and "My Shop" in `.shop-name` and `.nav-logo`. For a logo, see `customizing.md`.
    - `web/favicon.svg`: optional; swap it for the shop's icon.
+   - `web/shop.css`: optional; the shop's own styles (brand color default, background, logo sizing). Don't edit `style.css`. See `customizing.md`.
 2. Photos: put them in `photos/` named `<SKU>.jpg` (or `.png`, `.webp`, `.heic`), then run `./photos.sh`. It writes small JPEGs to `web/img/` (1000px, about 100–200 KB each, location data stripped). `photos/` is git-ignored, so only the web copies are published.
 3. Commit and push. The **Deploy to GitHub Pages** workflow runs on every push, and the site is at `https://<owner>.github.io/<repo>/`. If a run failed because Pages wasn't on yet, re-run it once the owner has turned Pages on: `gh workflow run pages.yml`, or Actions ▸ Deploy to GitHub Pages ▸ Run workflow.
    - A custom domain is optional. The owner sets it in Settings ▸ Pages ▸ Custom domain (admin only), plus a CNAME record at their DNS host.
