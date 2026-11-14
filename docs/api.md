@@ -28,12 +28,12 @@ Both return the same JSON bodies. Only the transport differs, and `api` in `web/
 ## Settings
 
 ```json
-{"subheading":"…","notes":["…"],"formNote":"","orderNote":"","instagram":"myshop",
+{"subheading":"…","notes":["…"],"formNote":"","orderNote":"","instagram":"myshop","contactFields":["Email","Messenger","Instagram"],
  "themeColor":"#f4a259","accentColor":"","submitColor":"","open":true,
  "closedMessage":"Pre-orders are closed. Thank you!","closesAt":"2026-12-01T16:00:00.000Z"}
 ```
 
-Colors are `#rrggbb` or `""`. `closesAt` is omitted without a deadline; an open page closes itself at that instant.
+`contactFields` lists the contact options the form offers, in order (lite only; when it's missing, as from pro, the page offers Email and Instagram). Colors are `#rrggbb` or `""`. `closesAt` is omitted without a deadline; an open page closes itself at that instant.
 
 ## Order
 
@@ -44,18 +44,18 @@ Request:
  "items":[{"sku":"stickers-001","quantity":2}],"website":""}
 ```
 
-`website` is a honeypot. When it's filled, the reply is a fake 201 and nothing is saved.
+`contactVia` is `Email`, `Messenger` or `Instagram`. A `messenger` field (Facebook username or profile link) is sent **only** when `contactVia` is `Messenger`, because the pro server rejects unknown fields. `website` is a honeypot. When it's filled, the reply is a fake 201 and nothing is saved.
 
 | Status | Body | Meaning |
 |---|---|---|
 | 201 | `{orderId, total}` | Saved |
-| 400 | `{error, field?}` | Invalid input; `field` names the form field (`name`, `email`, `instagram`, `mobile`, `contactVia`, `items`) |
+| 400 | `{error, field?}` | Invalid input; `field` names the form field (`name`, `email`, `messenger`, `instagram`, `mobile`, `contactVia`, `items`) |
 | 403 | `{error, closed:true}` | Orders are closed; `error` is the closed message |
 | 409 | `{error, sku, available}` | Not enough stock of `sku` |
 | 429 | `{error}` | Rate limited (lite: over 20 orders/minute shop-wide; pro: per IP) |
 | 503 | `{error}` | The sheet couldn't be read or written |
 
-The server re-validates everything and prices items from the sheet, never from the client. Validation rules: name 1–100 chars, no control characters; email or Instagram username (`[A-Za-z0-9._]{1,30}`, leading `@` dropped) depending on `contactVia`; Philippine mobile (`09…`, `9…`, `639…`, `+639…`, stored as `09XXXXXXXXX`); 1–50 distinct products, 1–99 of each (duplicates merged).
+The server re-validates everything and prices items from the sheet, never from the client. Validation rules: name 1–100 chars, no control characters; `contactVia` must be one of the shop's Contact Fields; then an email, a Facebook username/ID (`[A-Za-z0-9.]{1,50}`) or a facebook.com / fb.com / m.me / messenger.com link (stored as `https://…`, at most 200 chars), or an Instagram username (`[A-Za-z0-9._]{1,30}`), with a leading `@` dropped from usernames; Philippine mobile (`09…`, `9…`, `639…`, `+639…`, stored as `09XXXXXXXXX`); 1–50 distinct products, 1–99 of each (duplicates merged).
 
 ## Pro-only extensions (not in lite)
 

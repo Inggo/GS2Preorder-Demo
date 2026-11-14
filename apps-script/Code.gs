@@ -23,6 +23,8 @@ const TAB = {
   templates: "TEMPLATES",
 };
 const STATUSES = ["Pending", "Verified", "Paid", "Cancelled", "Out of Stock"];
+// Ways a customer can be reached, in ORDERS column order. SETTINGS "Contact Fields" picks which the form offers.
+const CONTACT_METHODS = ["Email", "Messenger", "Instagram"];
 
 const CURRENCY = "₱";
 const MAX_LINE_QTY = 99;
@@ -39,6 +41,11 @@ const DEFAULT_CLOSED = "Pre-orders are closed. Thank you!";
 
 const EMAIL_RE = /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[^\s@<>()",;:]+$/;
 const INSTAGRAM_RE = /^[A-Za-z0-9._]{1,30}$/;
+// A Facebook username or numeric ID (opened as m.me/<it>), or a link to a profile on these hosts
+// (kept as an https:// link, because "Copy link" in the Facebook app gives facebook.com/share/… links).
+const MESSENGER_USER_RE = /^[A-Za-z0-9.]{1,50}$/;
+const MESSENGER_URL_RE = /^(?:https?:\/\/)?(?:(?:www|m|web)\.)?(facebook\.com|fb\.com|m\.me|messenger\.com)(\/[A-Za-z0-9._~\-\/?=&%]+)$/i;
+const MAX_MESSENGER = 200;
 // 09XXXXXXXXX, 9XXXXXXXXX, 639XXXXXXXXX or +639XXXXXXXXX (Philippine mobiles).
 const MOBILE_RE = /^(?:\+?63|0)?(9\d{9})$/;
 const HEX_RE = /^#?[0-9A-Fa-f]{6}$/;
@@ -116,7 +123,7 @@ function placeOrder(body) {
   const st = readSettings(ss);
   if (!isOpen(st, Date.now())) return [403, { error: st.closedMessage || DEFAULT_CLOSED, closed: true }];
 
-  const req = normalize(body);
+  const req = normalize(body, contactMethods(st));
   if (req.field) return [400, { error: req.error, field: req.field }];
 
   // One order at a time, so two customers can't both take the last unit.
@@ -164,7 +171,7 @@ function placeOrder(body) {
 }
 
 /** Validates and normalizes the request: {customer, items} or {field, error}. */
-function normalize(b) {
+function normalize(b, methods) {
   const bad = (field, error) => ({ field: field, error: error });
   const str = (v) => (typeof v === "string" ? v : "");
 
@@ -173,7 +180,10 @@ function normalize(b) {
   if ([...name].length > MAX_NAME) return bad("name", "Name is too long.");
   if (/[\u0000-\u001f\u007f-\u009f]/.test(name)) return bad("name", "Name contains invalid characters.");
 
-  const c = { name: name, contactVia: str(b.contactVia), email: "", instagram: "", mobile: "" };
+  const c = { name: name, contactVia: str(b.contactVia), email: "", messenger: "", instagram: "", mobile: "" };
+  if (!methods.includes(c.contactVia)) {
+    return bad("contactVia", `Please choose ${methods.join(" or ")}.`);
+  }
   if (c.contactVia === "Email") {
     c.email = str(b.email).trim();
     if (!EMAIL_RE.test(c.email) || c.email.length > MAX_EMAIL) {
@@ -183,7 +193,8 @@ function normalize(b) {
     c.instagram = str(b.instagram).trim().replace(/^@/, "");
     if (!INSTAGRAM_RE.test(c.instagram)) return bad("instagram", "Please enter a valid Instagram username.");
   } else {
-    return bad("contactVia", "Please choose Email or Instagram.");
+    c.messenger = parseMessenger(str(b.messenger));
+    if (!c.messenger) return bad("messenger", "Please enter your Facebook username or profile link.");
   }
 
   const m = MOBILE_RE.exec(str(b.mobile).trim().replace(/[\s\-().]/g, ""));
@@ -207,6 +218,15 @@ function normalize(b) {
   return { customer: c, items: [...merged].map(([sku, quantity]) => ({ sku: sku, quantity: quantity })) };
 }
 
+/** A Facebook username/ID as typed (minus "@"), or a facebook.com / m.me link as https://…; "" if neither. */
+function parseMessenger(v) {
+  const s = v.trim().replace(/^@/, "");
+  if (MESSENGER_USER_RE.test(s)) return s;
+  const m = MESSENGER_URL_RE.exec(s);
+  if (!m || s.length > MAX_MESSENGER) return "";
+  return "https://" + m[1].toLowerCase() + m[2];
+}
+
 /** Allows ORDERS_PER_MINUTE orders per clock minute. Call while holding the lock. */
 function takeRateSlot() {
   const cache = CacheService.getScriptCache();
@@ -218,7 +238,7 @@ function takeRateSlot() {
 }
 
 /**
- * Writes the ORDERS row (A–J) and ORDER_ITEMS rows (A–F). The columns after
+ * Writes the ORDERS row (A–K) and ORDER_ITEMS rows (A–F). The columns after
  * those are header-row formulas and must never be written, or they #REF!.
  * Text is written with a leading apostrophe so it is stored exactly as typed:
  * never run as a formula (e.g. a Name of "=IMPORTXML(...)"), and mobile
@@ -235,8 +255,8 @@ function saveOrder(ss, o) {
   const t = (s) => (s === "" ? "" : "'" + s);
   const c = o.customer;
   const placed = Utilities.formatDate(o.placedAt, ss.getSpreadsheetTimeZone(), "yyyy-MM-dd HH:mm:ss");
-  orders.getRange(orderRow, 1, 1, 10).setValues([[
-    t(o.id), t(placed), t(c.name), t(c.contactVia), t(c.email), t(c.instagram), t(c.mobile),
+  orders.getRange(orderRow, 1, 1, 11).setValues([[
+    t(o.id), t(placed), t(c.name), t(c.contactVia), t(c.email), t(c.messenger), t(c.instagram), t(c.mobile),
     t(orderSummary(o)), orderTotal(o) / 100, "Pending",
   ]]);
   items.getRange(itemRow, 1, o.lines.length, 6).setValues(o.lines.map((l) => [
@@ -376,7 +396,7 @@ function publicProduct(p) {
 
 /** SETTINGS: "Setting | Value" rows; names match case-insensitively, blanks are ignored. */
 function readSettings(ss) {
-  const st = { notes: [] };
+  const st = { notes: [], contactFields: [] };
   const sheet = ss.getSheetByName(TAB.settings);
   if (!sheet) return st;
   const tz = ss.getSpreadsheetTimeZone();
@@ -392,6 +412,12 @@ function readSettings(ss) {
       case "order note": st.orderNote = text; break;
       case "closed message": st.closedMessage = text; break;
       case "notify email": st.notifyEmail = text; break;
+      case "contact fields":
+      case "contact field": {
+        const m = CONTACT_METHODS.find((x) => x.toLowerCase() === text.toLowerCase());
+        if (m && !st.contactFields.includes(m)) st.contactFields.push(m);
+        break;
+      }
       case "instagram": {
         const ig = text.replace(/^@/, "");
         if (INSTAGRAM_RE.test(ig)) st.instagram = ig;
@@ -415,6 +441,11 @@ function readSettings(ss) {
   return st;
 }
 
+/** The contact methods the form offers, in SETTINGS row order. No "Contact Fields" rows at all: every method. */
+function contactMethods(st) {
+  return st.contactFields && st.contactFields.length ? st.contactFields : CONTACT_METHODS;
+}
+
 function isOpen(st, now) {
   return !st.ordersClosed && !(st.closeAt && now >= st.closeAt);
 }
@@ -427,6 +458,7 @@ function publicSettings(st, now) {
     formNote: st.formNote || "",
     orderNote: st.orderNote || "",
     instagram: st.instagram || "",
+    contactFields: contactMethods(st),
     themeColor: st.themeColor || "",
     accentColor: st.accentColor || "",
     submitColor: st.submitColor || "",
@@ -493,6 +525,7 @@ function checkSetup() {
       `${products.length} products in ${cats.size} categories.`,
       `${products.filter((p) => p.available > 0).length} products in stock.`,
       isOpen(st, Date.now()) ? "Orders are OPEN." : "Orders are CLOSED.",
+      `Customers can be reached by: ${contactMethods(st).join(", ")}.`,
       st.closeAt ? `Orders close on ${new Date(st.closeAt).toString()}.` : "No closing date set.",
       st.notifyEmail ? `New-order emails go to ${st.notifyEmail}.` : "No Notify Email set: you won't get new-order emails.",
     ];
@@ -544,20 +577,21 @@ const FORMULAS = {
   available:
     '={"Available"; MAP(A2:A, F2:F, I2:I, J2:J, LAMBDA(sku, inv, r, s, IF(sku="", , N(inv) - N(r) - N(s))))}',
   itemStatus:
-    '={"Status"; MAP(A2:A, LAMBDA(id, IF(id="", , IFERROR(VLOOKUP(id, ORDERS!A:J, 10, FALSE), ))))}',
+    '={"Status"; MAP(A2:A, LAMBDA(id, IF(id="", , IFERROR(VLOOKUP(id, ORDERS!A:K, 11, FALSE), ))))}',
   subject:
-    '={"Subject"; MAP(A2:A, C2:C, J2:J, LAMBDA(id, name, st, IF(OR(id="", st=""), , ' +
+    '={"Subject"; MAP(A2:A, C2:C, K2:K, LAMBDA(id, name, st, IF(OR(id="", st=""), , ' +
     'LET(s, IFERROR(VLOOKUP(st, TEMPLATES!A:B, 2, FALSE), ""), IF(s="", , ' +
     'SUBSTITUTE(SUBSTITUTE(s, "{order_id}", id), "{name}", name))))))}',
   message:
-    '={"Message"; MAP(A2:A, C2:C, H2:H, I2:I, J2:J, LAMBDA(id, name, items, total, st, IF(OR(id="", st=""), , ' +
+    '={"Message"; MAP(A2:A, C2:C, I2:I, J2:J, K2:K, LAMBDA(id, name, items, total, st, IF(OR(id="", st=""), , ' +
     'LET(b, IFERROR(VLOOKUP(st, TEMPLATES!A:C, 3, FALSE), ""), IF(b="", , ' +
     'SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(b, "{name}", name), "{order_id}", id), "{items}", items), ' +
     '"{total}", "₱" & TEXT(total, IF(total = INT(total), "#,##0", "#,##0.00"))))))))}',
   contactLink:
-    '={"Contact Link"; MAP(D2:D, E2:E, F2:F, K2:K, L2:L, LAMBDA(via, email, ig, subj, msg, IF(msg="", , ' +
+    '={"Contact Link"; MAP(D2:D, E2:E, F2:F, G2:G, L2:L, M2:M, LAMBDA(via, email, fb, ig, subj, msg, IF(msg="", , ' +
     'IF(via="Instagram", HYPERLINK("https://ig.me/m/" & ig, "💬 Open Instagram DM"), ' +
-    'HYPERLINK("mailto:" & email & "?subject=" & ENCODEURL(subj) & "&body=" & ENCODEURL(msg), "✉️ Send email")))))}',
+    'IF(via="Messenger", HYPERLINK(IF(LEFT(fb, 8)="https://", fb, "https://m.me/" & fb), "💬 Open Messenger"), ' +
+    'HYPERLINK("mailto:" & email & "?subject=" & ENCODEURL(subj) & "&body=" & ENCODEURL(msg), "✉️ Send email"))))))}',
 };
 
 function buildInventory(sheet) {
@@ -582,28 +616,28 @@ function buildInventory(sheet) {
 }
 
 function buildOrders(sheet) {
-  sheet.getRange("A1:J1").setValues([[
-    "Order ID", "Timestamp", "Name", "Contact Via", "Email", "Instagram", "Mobile", "Items", "Total", "Status",
+  sheet.getRange("A1:K1").setValues([[
+    "Order ID", "Timestamp", "Name", "Contact Via", "Email", "Messenger", "Instagram", "Mobile", "Items", "Total", "Status",
   ]]);
-  sheet.getRange("K1").setFormula(FORMULAS.subject);
-  sheet.getRange("L1").setFormula(FORMULAS.message);
-  sheet.getRange("M1").setFormula(FORMULAS.contactLink);
-  sheet.getRange("I2:I").setNumberFormat(MONEY_FORMAT);
-  sheet.getRange("H2:H").setWrap(true);
-  sheet.getRange("K1:M").setBackground("#f3f3f3");
-  sheet.getRange("K1:M").protect().setDescription("Computed message columns").setWarningOnly(true);
+  sheet.getRange("L1").setFormula(FORMULAS.subject);
+  sheet.getRange("M1").setFormula(FORMULAS.message);
+  sheet.getRange("N1").setFormula(FORMULAS.contactLink);
+  sheet.getRange("J2:J").setNumberFormat(MONEY_FORMAT);
+  sheet.getRange("I2:I").setWrap(true);
+  sheet.getRange("L1:N").setBackground("#f3f3f3");
+  sheet.getRange("L1:N").protect().setDescription("Computed message columns").setWarningOnly(true);
 
-  const status = sheet.getRange("J2:J");
+  const status = sheet.getRange("K2:K");
   status.setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).setAllowInvalid(false).build());
   const colors = { Pending: "#fff2cc", Verified: "#cfe2f3", Paid: "#d9ead3", Cancelled: "#eeeeee", "Out of Stock": "#f4cccc" };
   const rules = Object.entries(colors).map(([s, bg]) =>
     SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(s).setBackground(bg).setRanges([status]).build());
   rules.push(SpreadsheetApp.newConditionalFormatRule()
-    .whenFormulaSatisfied('=$M2<>""').setBackground("#ffe08a").setBold(true)
-    .setRanges([sheet.getRange("M2:M")]).build());
+    .whenFormulaSatisfied('=$N2<>""').setBackground("#ffe08a").setBold(true)
+    .setRanges([sheet.getRange("N2:N")]).build());
   sheet.setConditionalFormatRules(rules);
-  sheet.setColumnWidth(8, 280);
-  sheet.setColumnWidth(12, 280);
+  sheet.setColumnWidth(9, 280);
+  sheet.setColumnWidth(13, 280);
 }
 
 function buildOrderItems(sheet) {
@@ -641,6 +675,10 @@ function buildSettings(sheet) {
     ["Note", "We'll message you to confirm your order and how to pay.", ""],
     ["Instagram", "", "Your Instagram username, linked under the notes."],
     ["Form Note", "", "Text above the customer's details in the order form."],
+    ...CONTACT_METHODS.map((m, i) => ["Contact Fields", m, i === 0
+      ? "One row per way customers can ask to be reached (pick from the dropdown). Delete a row to turn that option off; " +
+        "the rows' order is the order on the form. No rows at all: all three are offered."
+      : ""]),
     ["Order Note", "We'll message you within one to two days with your exact total and how to pay.", "Small text under the order button."],
     ["Orders Open", true, "Untick to close orders right away."],
     ["Close At", "", "Date and time orders close by themselves (e.g. 2026-12-01 00:00). Blank: no deadline."],
@@ -651,8 +689,11 @@ function buildSettings(sheet) {
     ["Submit Color", "", "The order button as #rrggbb."],
   ];
   sheet.getRange(1, 1, rows.length, 3).setValues(rows);
-  sheet.getRange("B8").insertCheckboxes().setValue(true);
-  sheet.getRange("B9").setNumberFormat("yyyy-mm-dd hh:mm");
+  const rowOf = (name) => rows.findIndex((r) => r[0] === name) + 1;
+  sheet.getRange(rowOf("Orders Open"), 2).insertCheckboxes().setValue(true);
+  sheet.getRange(rowOf("Close At"), 2).setNumberFormat("yyyy-mm-dd hh:mm");
+  sheet.getRange(rowOf("Contact Fields"), 2, CONTACT_METHODS.length, 1).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(CONTACT_METHODS, true).setAllowInvalid(false).build());
   sheet.getRange("C2:C").setFontColor("#666666").setWrap(true);
   sheet.setColumnWidth(1, 140);
   sheet.setColumnWidth(2, 360);

@@ -36,7 +36,7 @@ Send the owner the `/copy` link. They click **Make a copy**, keep the name or re
 The owner does this in their copy, using `owner-guide.md` as the reference. You only review it.
 
 - **INVENTORY**: delete the sample rows and add one row per product: SKU (their own code, e.g. `stickers-001`; it names the photo file), category, name, short description, price and stock. Leave the grey columns alone.
-- **SETTINGS**: Subheading, Notes, Instagram, Close At, Notify Email, and colors (optional).
+- **SETTINGS**: Subheading, Notes, Instagram, Contact Fields (delete the rows for contact options the shop doesn't want), Close At, Notify Email, and colors (optional).
 - **TEMPLATES**: replace "(your payment details here)" and "(Pickup or delivery details here.)".
 - They then send you the photos, named by SKU.
 
@@ -59,7 +59,7 @@ In the owner's sheet:
      - *See, edit, create and delete only the specific Google Sheets you use this app with*: this one sheet only, not the rest of their Drive.
      - *Send email as you*: only the new-order alert to their Notify Email.
      - *Display and run third-party web content in prompts and sidebars*: the GS2Preorder menu and its pop-ups.
-   - Click **Allow**.
+   - If Google shows a checkbox for each permission, tick **Select all**. All three are needed. Then click **Continue** (or **Allow**).
 4. Copy the **Web app URL** (`https://script.google.com/macros/s/AKfy…/exec`). That's the "key" the website needs. It isn't secret: anyone can place orders through it, the same as through the website.
 5. Check it: open `<URL>?action=ping` in a browser. You should see `{"status":200,"ok":true,"api":1}`.
 
@@ -109,7 +109,7 @@ Then:
    - the owner gets the alert email;
    - setting Status to **Verified** fills Subject, Message and the yellow Contact Link, and the link opens a prefilled email.
 3. Test closing: untick **Orders Open**, reload the site (allow 30 s for the cache), then tick it again.
-4. Delete the test rows: clear only **ORDERS A2:J** and **ORDER_ITEMS A2:F**.
+4. Delete the test rows: clear only **ORDERS A2:K** and **ORDER_ITEMS A2:F**.
 
 ## 7. Hand over
 

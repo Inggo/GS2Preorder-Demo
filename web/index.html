@@ -81,10 +81,11 @@
           <span class="field-error" data-error="name"></span>
         </label>
 
-        <fieldset class="field">
+        <fieldset class="field contact-choice">
           <legend>How should we reach you?</legend>
           <div class="choice">
             <label><input type="radio" name="contactVia" value="Email" checked> <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</label>
+            <label><input type="radio" name="contactVia" value="Messenger"> <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5C6.5 2.5 2.5 6.4 2.5 11.3c0 2.6 1.1 4.8 3 6.4v3.8l3.4-1.9c1 .3 2 .4 3.1.4 5.5 0 9.5-3.9 9.5-8.7S17.5 2.5 12 2.5z"/><path d="m7 13.5 3.5-3.7 2.6 2.4 3.9-3.7"/></svg> Messenger</label>
             <label><input type="radio" name="contactVia" value="Instagram"> <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg> Instagram</label>
           </div>
           <span class="field-error" data-error="contactVia"></span>
@@ -94,6 +95,13 @@
           <span>Email address</span>
           <input name="email" type="email" autocomplete="email" maxlength="254">
           <span class="field-error" data-error="email"></span>
+        </label>
+
+        <label class="field" data-contact="Messenger" hidden>
+          <span>Facebook username or profile link</span>
+          <input name="messenger" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="200" placeholder="juan.delacruz or facebook.com/…">
+          <span class="hint">In Facebook: your profile ▸ ⋯ ▸ Copy link</span>
+          <span class="field-error" data-error="messenger"></span>
         </label>
 
         <label class="field" data-contact="Instagram" hidden>

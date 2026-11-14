@@ -610,9 +610,9 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 .prefixed { display: flex; align-items: center; gap: 0.35rem; }
 .prefixed > span { color: var(--ink-soft); font-weight: 600; }
 
-.choice { display: flex; gap: 0.5rem; }
+.choice { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .choice label {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -626,6 +626,8 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 .choice svg { flex: none; width: 1.2rem; height: 1.2rem; color: var(--ink-soft); }
 .choice label:has(:checked) svg { color: var(--accent); }
 .choice input { accent-color: var(--accent); width: 1.1rem; height: 1.1rem; margin: 0; }
+
+.hint { color: var(--ink-soft); font-size: 0.9rem; }
 
 .field-error:empty, .form-error:empty { display: none; }
 .field-error, .form-error { color: var(--gumamela); font-size: 0.95rem; font-weight: 600; }

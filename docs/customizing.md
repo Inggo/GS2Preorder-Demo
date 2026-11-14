@@ -33,4 +33,4 @@ These are hard-coded in three places. Change all of them together:
 
 ## Contact options
 
-The form offers Email or Instagram. Adding another method (e.g. Messenger) touches `index.html` (radio and field), `normalize()` in `Code.gs`, the ORDERS columns and the Contact Link formula, so plan it as a starter change, not a per-shop tweak.
+The form can offer Email, Messenger and Instagram. Each shop picks which ones in SETTINGS ▸ **Contact Fields**, so no code change is needed. Adding a *new* method (e.g. Viber) touches `index.html` (radio, icon and field), `CONTACT_METHODS` and `normalize()` in `Code.gs`, `CONTACT_PHRASE` in `app.js`, the ORDERS columns and the Contact Link formula, so plan it as a starter change, not a per-shop tweak.

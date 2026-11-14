@@ -425,6 +425,23 @@ function openOrder() {
   orderDialog.showModal();
 }
 
+// The pro (Go) server doesn't send contactFields; it takes Email and Instagram.
+const DEFAULT_CONTACTS = ["Email", "Instagram"];
+const CONTACT_PHRASE = { Email: "email you", Messenger: "message you on Messenger", Instagram: "message you on Instagram" };
+
+/** Shows only the contact options the shop offers, in its order; one option needs no choice. */
+function applyContactFields(list) {
+  const methods = (Array.isArray(list) ? list : DEFAULT_CONTACTS).filter((m) => m in CONTACT_PHRASE);
+  if (!methods.length) methods.push(...DEFAULT_CONTACTS);
+  const choice = $(".contact-choice .choice", form);
+  const radios = [...form.elements.contactVia];
+  for (const r of radios) r.closest("label").hidden = !methods.includes(r.value);
+  for (const m of methods) choice.append(radios.find((r) => r.value === m).closest("label"));
+  if (!methods.includes(form.elements.contactVia.value)) radios.find((r) => r.value === methods[0]).checked = true;
+  $(".contact-choice", form).hidden = methods.length === 1;
+  syncContactFields();
+}
+
 function syncContactFields() {
   const via = form.elements.contactVia.value;
   for (const el of $$("[data-contact]", form)) {
@@ -463,6 +480,9 @@ function checkForm() {
   if (f.contactVia.value === "Instagram" && !f.instagram.value.trim().replace(/^@/, "")) {
     return ["instagram", "Please enter your Instagram username."];
   }
+  if (f.contactVia.value === "Messenger" && !f.messenger.value.trim()) {
+    return ["messenger", "Please enter your Facebook username or profile link."];
+  }
   if (!f.mobile.value.trim()) return ["mobile", "Please enter your mobile number."];
   return null;
 }
@@ -486,6 +506,8 @@ async function submitOrder(event) {
     items: [...state.cart].map(([sku, quantity]) => ({ sku, quantity })),
     website: f.website.value,
   };
+  // Only when chosen: the pro server rejects fields it doesn't know.
+  if (body.contactVia === "Messenger") body.messenger = f.messenger.value;
 
   const button = $("button[type=submit]", form);
   const label = $(".button-label", button);
@@ -526,7 +548,7 @@ function showDone(data, contactVia) {
   $(".order-id", orderDialog).textContent = data.orderId;
   $(".done-note", orderDialog).textContent =
     `Estimated total ${peso(data.total)}. Keep this number for reference. We'll check your pre-order and ` +
-    (contactVia === "Instagram" ? "message you on Instagram" : "email you") +
+    (CONTACT_PHRASE[contactVia] || "contact you") +
     " with payment details.";
   showView("done");
   state.cart.clear();
@@ -614,6 +636,7 @@ function applySettings(data) {
     a.textContent = "@" + data.instagram;
   }
   handle.hidden = !data.instagram;
+  applyContactFields(data.contactFields);
   setRich($(".form-note", orderDialog), data.formNote);
   if (data.orderNote) setRich($(".fineprint", orderDialog), data.orderNote);
 }
@@ -705,7 +728,7 @@ orderDialog.addEventListener("click", (e) => {
 });
 
 loadCart();
-syncContactFields();
+applyContactFields(); // until the settings arrive
 watchMasthead();
 watchCartbar();
 loadShop();

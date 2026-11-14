@@ -29,7 +29,7 @@ Every order arrives as **Pending**. You'll get an email if *Notify Email* is set
 
 1. **Check it**, then set Status to **Verified**. The **Message** column fills in with your payment instructions, and a yellow button appears:
    - **✉️ Send email**: opens a ready-to-send email. In Chrome, if it doesn't work, copy **Subject** and **Message** into an email by hand.
-   - **💬 Open Instagram DM**: opens a chat with the customer. Paste the **Message** in.
+   - **💬 Open Messenger** or **💬 Open Instagram DM**: opens a chat with the customer, or their Facebook profile if they gave a link (tap **Message** there). Paste the **Message** in.
 2. When they've paid, set Status to **Paid** and send the receipt message the same way.
 3. If you can't fill it, set **Cancelled** or **Out of Stock**. Their items go back into stock automatically.
 
@@ -47,6 +47,7 @@ One row per status. These words get replaced automatically:
 ## Website text and closing (SETTINGS)
 
 - **Subheading** and **Note** rows are the text at the top of the site. Add more Note rows for more bullet points. Put `**two stars**` around words for **bold**, and `__two underscores__` for underlined.
+- **Contact Fields**: how customers can ask you to reach them: Email, Messenger and Instagram, one row each. Delete a row to stop offering that option, and reorder the rows to change their order on the form. Keep at least one row (with none, all three come back).
 - **Orders Open**: untick it to close the shop right away.
 - **Close At**: the shop closes by itself at this date and time.
 - **Closed Message**: what visitors see after closing.
