@@ -26,6 +26,9 @@ docs/
   api.md              the backend contract shared with the pro (Go) server
   customizing.md      names, logo, colors, currency and other per-shop changes
   pro.md              lite vs pro and the upgrade path
+  hooks.md            the page's extension API (window.ShopPage), used by pro
+  web/                notes on the web/ files (never deployed)
+CLAUDE.md, LITE.md    notes for Claude Code: common, and lite-only
 ```
 
 ## Quick start

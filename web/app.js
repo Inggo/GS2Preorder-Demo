@@ -8,6 +8,7 @@ const CONFIGURED = SERVER || API.startsWith("https://script.google.com/");
 const MAX_PER_ITEM = 99;
 const CART_KEY = "cart-v1:" + location.pathname;
 const TAPE_TINTS = 6;
+const PRICING_DELAY = 150;
 const THEMES = ["default", "art-crafts", "dark"];
 const THEME_KEY = "theme-v1:" + location.pathname;
 
@@ -133,6 +134,10 @@ function setQty(sku, qty) {
   }
 }
 
+function cartItems() {
+  return [...state.cart].map(([sku, quantity]) => ({ sku, quantity }));
+}
+
 function cartTotals() {
   let items = 0;
   let total = 0;
@@ -143,10 +148,73 @@ function cartTotals() {
   return { items, total };
 }
 
+const pricing = { fn: null, timer: 0, abort: null, quote: null, busy: false };
+
+function cartKey() {
+  return JSON.stringify([...state.cart].sort());
+}
+
+function freshQuote() {
+  return pricing.quote && pricing.quote.key === cartKey() ? pricing.quote : null;
+}
+
+function requestPricing() {
+  if (!pricing.fn) return;
+  clearTimeout(pricing.timer);
+  pricing.abort?.abort();
+  pricing.busy = state.cart.size > 0 && !freshQuote();
+  if (!pricing.busy) return;
+  pricing.timer = setTimeout(async () => {
+    const key = cartKey();
+    const abort = new AbortController();
+    pricing.abort = abort;
+    let quote = null;
+    try {
+      const q = await pricing.fn(cartItems(), abort.signal);
+      if (q && Number.isFinite(q.total)) {
+        const discounts = (Array.isArray(q.discounts) ? q.discounts : [])
+          .filter((d) => d && typeof d.label === "string" && Number.isFinite(d.amount));
+        quote = { key, total: q.total, discounts };
+      }
+    } catch (err) {
+      if (abort.signal.aborted) return;
+      console.error("pricing failed; showing regular prices", err);
+    }
+    if (abort.signal.aborted) return;
+    pricing.quote = quote;
+    pricing.busy = false;
+    renderTotals();
+  }, PRICING_DELAY);
+}
+
 function renderTotals() {
-  const { items, total } = cartTotals();
-  $(".cartbar-summary", cartbar).textContent = `${plural(items, "item", "items")}, ${peso(total)}`;
-  $(".total-amount", orderDialog).textContent = peso(total);
+  const { items, total: subtotal } = cartTotals();
+  const quote = freshQuote();
+  const pending = pricing.busy && !quote;
+  const summary = $(".cartbar-summary", cartbar);
+  const amount = $(".total-amount", orderDialog);
+  const list = $(".discounts", orderDialog);
+  for (const el of [summary, amount, list]) el.classList.toggle("pending", pending);
+  if (pending) {
+    summary.textContent = summary.textContent.replace(/^[^,]*/, plural(items, "item", "items"));
+    return;
+  }
+
+  const total = quote ? quote.total : subtotal;
+  summary.textContent = `${plural(items, "item", "items")}, ${peso(total)}`;
+  amount.textContent = peso(total);
+  list.replaceChildren();
+  for (const d of quote?.discounts || []) {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = d.label;
+    const off = document.createElement("span");
+    off.className = "discount-amount";
+    off.textContent = `−${peso(d.amount)}`;
+    li.append(label, off);
+    list.append(li);
+  }
+  list.hidden = !list.children.length;
 }
 
 function stepper(sku, qty, limit, label) {
@@ -252,6 +320,7 @@ function productCard(p, showCategory = false) {
   fillSubline($(".product-desc", el), showCategory ? p.category : "", p.description);
   $(".price", el).textContent = peso(p.price);
   fillProduct(el, p);
+  emit("card", el, p);
   return el;
 }
 
@@ -295,7 +364,9 @@ function fillProduct(el, p) {
 
 function updateProduct(sku, keepFocus = true) {
   const active = document.activeElement;
-  for (const el of $$(`.product[data-sku="${CSS.escape(sku)}"]`, shop)) {
+  const els = $$(`.product[data-sku="${CSS.escape(sku)}"]`, shop);
+  for (const el of tracked) if (el.isConnected && el.dataset.sku === sku) els.push(el);
+  for (const el of els) {
     const step = keepFocus && active?.closest(".qty-slot") && el.contains(active)
       ? active.dataset.step || "1"
       : null;
@@ -307,6 +378,7 @@ function updateProduct(sku, keepFocus = true) {
 }
 
 function updateCartbar() {
+  requestPricing();
   const { items } = cartTotals();
   cartbar.hidden = items === 0;
   renderTotals();
@@ -315,6 +387,7 @@ function updateCartbar() {
   navCart.hidden = items === 0;
   $(".nav-cart-count", navCart).textContent = items;
   navCart.setAttribute("aria-label", `Review pre-order: ${plural(items, "item", "items")}`);
+  emit("cart");
 }
 
 function placeCartbar() {
@@ -413,6 +486,7 @@ function cartLine(p, qty, flagged) {
     : `${peso(p.price)} each`;
   $(".line-qty", li).append(stepper(p.sku, qty, limitFor(p), p.name));
   $(".line-total", li).textContent = peso(p.price * qty);
+  emit("line", li, p);
   return li;
 }
 
@@ -527,7 +601,7 @@ async function submitOrder(event) {
     email: f.contactVia.value === "Email" ? f.email.value : "",
     instagram: f.contactVia.value === "Instagram" ? f.instagram.value : "",
     mobile: f.mobile.value,
-    items: [...state.cart].map(([sku, quantity]) => ({ sku, quantity })),
+    items: cartItems(),
     website: f.website.value,
   };
   if (body.contactVia === "Messenger") body.messenger = f.messenger.value;
@@ -623,6 +697,7 @@ function closeShop(message) {
     $(".form-error", form).textContent = message;
     $("button[type=submit]", form).disabled = true;
   }
+  emit("closed", message);
 }
 
 let closeTimer = 0;
@@ -691,7 +766,7 @@ async function loadShop() {
   }
   let data;
   try {
-    const [res, photos] = await Promise.all([api.shop(), photoManifest()]);
+    const [res, photos] = await Promise.all([api.shop(), photoManifest(), scriptsLoaded]);
     if (res.status !== 200) throw new Error(res.data.error);
     data = res.data;
     for (const p of data.products) {
@@ -706,7 +781,9 @@ async function loadShop() {
   state.bySku = new Map(data.products.map((p) => [p.sku, p]));
   reconcileCart();
   renderShop();
+  pricing.quote = null;
   updateCartbar();
+  emit("products");
 }
 
 function qtyClick(e) {
@@ -752,6 +829,61 @@ form.addEventListener("change", (e) => {
 orderDialog.addEventListener("click", (e) => {
   if (e.target.closest("[data-close]") || e.target === orderDialog) orderDialog.close();
 });
+
+const hooks = { card: [], line: [], cart: [], products: [], closed: [] };
+const tracked = new Set();
+
+function emit(name, ...args) {
+  for (const fn of hooks[name]) {
+    try {
+      fn(...args);
+    } catch (err) {
+      console.error(`"${name}" hook failed`, err);
+    }
+  }
+}
+
+window.ShopPage = Object.freeze({
+  version: 1,
+  config: CONFIG,
+  on(name, fn) {
+    if (!hooks[name] || typeof fn !== "function") throw new Error(`ShopPage.on: unknown hook "${name}"`);
+    hooks[name].push(fn);
+  },
+  setPricing(fn) {
+    pricing.fn = typeof fn === "function" ? fn : null;
+    pricing.quote = null;
+    if (state.products.length) updateCartbar();
+  },
+  product: (sku) => state.bySku.get(sku),
+  qty: (sku) => state.cart.get(sku) || 0,
+  setQty,
+  qtyClick,
+  track(el) {
+    tracked.add(el);
+    const p = state.bySku.get(el.dataset.sku);
+    if (p) fillProduct(el, p);
+  },
+  fillSubline,
+  peso,
+});
+
+function loadScripts() {
+  const list = Array.isArray(CONFIG.scripts) ? CONFIG.scripts : [];
+  return Promise.all(list.map((src) => new Promise((resolve) => {
+    if (typeof src !== "string" || !/^[\w-][\w.-]*\.js$/.test(src)) {
+      console.error("config.js scripts: skipping", src);
+      return resolve();
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    script.onload = script.onerror = () => resolve();
+    document.head.append(script);
+  })));
+}
+
+const scriptsLoaded = loadScripts();
 
 loadCart();
 applyContactFields();

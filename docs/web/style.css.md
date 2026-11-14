@@ -16,6 +16,10 @@ app.js sets `<html data-theme>` (and `web/theme.js` sets it early from the last 
 - Each theme sets its own default `--theme-brand`. A shop's `web/shop.css` may set `--brand` itself, and SETTINGS Primary Color overrides both.
 - `--on-light` is dark text for light fills, whatever the theme. Use it for text on a `--brand` fill, never `--ink` (which is light in `dark`).
 
+## Discounts and pending
+
+`.discounts` is the list of discount lines above the order sheet's total, filled only when an extension prices the cart (see [hooks.md](../hooks.md#pricing)); lite never shows it. `.pending` dims totals while a price is being worked out.
+
 ## Default theme sections
 
 - **Masthead**: left-aligned; the shop name is the one loud thing.

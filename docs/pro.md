@@ -19,12 +19,12 @@
 
 ## Plan for building pro
 
-1. **One frontend, feature flags.** Port the promo quote and the photo viewer from the pro `web/app.js` into this repo's `app.js`, switched on by `SHOP_CONFIG.features = { promos: true, viewer: true }` (only valid with `backend: "server"`). Lite keeps them off, so its behavior doesn't change. Then the pro shops move onto this frontend, and both lines share one `web/`.
-2. **Generalize the Go server** (currently in its own repo, tied to one shop) into a tenant-neutral module:
+1. **One frontend, extended by pro.** This repo's `web/` is the page for both editions. `app.js` has a small extension API (`docs/hooks.md`); the pro starter adds `web/pro.js` (promo pricing, the photo viewer), loaded with `SHOP_CONFIG.scripts`. Lite loads nothing extra, so its behavior doesn't change.
+2. **Generalize the Go server** (now in the pro starter, tenant-neutral) further:
    - Currency, timezone and the mobile-number rule come from env instead of constants (lite has the same three hard-coded in `Code.gs` and `app.js`; see `customizing.md`).
    - Optional: `GET api/shop`, returning products and settings in one call like lite.
    - Optional: CORS (`Access-Control-Allow-Origin` for the tenant's Pages origin), if a pro shop should keep its frontend on GitHub Pages. The simpler default is to serve the frontend from the VPS, as the first shop does, so everything stays same-origin under the strict CSP.
-3. **Repo layout**: either a `server/` directory here (Go module, `deploy/`) or a separate `gs2preorder-server` repo that pulls `web/` from this one. A separate repo keeps lite clones free of Go and VPS scripts.
+3. **Repo layout**: a separate private pro starter, `GS2Preorder-Pro`, built on this repo's history: it pulls this repo and adds the Go server, the watermark tool, the VPS deploy and `pro.js`. Pro shop repos pull the pro starter. Lite clones stay free of Go and VPS scripts.
 
 ## Pro onboarding: the Google Cloud service account
 

@@ -4,8 +4,10 @@ The page talks to one of two backends, picked in `web/config.js`:
 
 ```js
 window.SHOP_CONFIG = { backend: "apps-script", api: "https://script.google.com/macros/s/…/exec" }; // lite
-window.SHOP_CONFIG = { backend: "server", api: "api/" };                                            // pro (Go)
+window.SHOP_CONFIG = { backend: "server", api: "api/", scripts: ["pro.js"] };                       // pro (Go)
 ```
+
+`scripts` loads extra page scripts (pro's `pro.js`: promo pricing and the photo viewer); see `hooks.md`.
 
 Both return the same JSON bodies. Only the transport differs, and `api` in `web/app.js` hides the difference: it hands every caller a `{status, data}` pair.
 
