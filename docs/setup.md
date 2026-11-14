@@ -126,11 +126,13 @@ git pull --no-rebase starter main  # merges the starter into the shop's own edit
 git push                             # redeploys the site
 ```
 
+If the pull changed `apps-script/Code.gs` (`git diff --stat ORIG_HEAD.. -- apps-script`), the site isn't fully updated until you also update the shop's script (next section). New pages can depend on new fields from the script, e.g. SETTINGS `Theme` does nothing until the script sends `theme`.
+
 Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. Use `--no-rebase`, never `--rebase`: once the shop has its own commits, a plain `git pull` stops with "divergent branches", and a rebase would rewrite commits that were already pushed. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
 
 ## Updating a shop's script later
 
-Every shop has its own copy of the script, so a change in `Code.gs` has to be applied to each shop:
+Every shop has its own copy of the script, so a change in `Code.gs` has to be applied to each shop. Saving the code isn't enough for the website: the web app keeps serving the version it was deployed with until you deploy a new one. Only the sheet's own menu items (**Set up sheet**, **Check setup**) use the saved code right away. Sheet edits (products, SETTINGS, TEMPLATES) never need a redeploy; the script reads them live, with up to 30 s of caching.
 
 1. In the shop's Apps Script editor, paste the new `Code.gs`.
 2. **Deploy ▸ Manage deployments ▸ (pencil) ▸ Version: New version ▸ Deploy**. Editing the existing deployment keeps the same URL. A *New deployment* would make a new URL, which would then have to go into `config.js`.
@@ -147,5 +149,6 @@ With clasp (`npm i -g @google/clasp`, `clasp login`), you can do it from this re
 | "Anyone" isn't offered under Who has access | The owner uses a Google Workspace account whose admin blocks public web apps. Use a personal Gmail account. |
 | A sheet edit doesn't show on the site | Products and settings are cached for 30 s. |
 | A code change doesn't show | You saved but didn't deploy a **new version** of the existing deployment. |
+| A SETTINGS row (e.g. `Theme`) has no effect, though the site is up to date | The shop's script predates that setting. Paste the current `Code.gs` and deploy a new version. Check with `<web app URL>?action=shop`: the setting is missing from `settings`. |
 | `#REF!` in a grey column | Something was typed under a header formula. Delete it. |
 | No alert emails | Notify Email is blank, or the daily quota was hit (consumer Gmail: 100 recipients/day). |

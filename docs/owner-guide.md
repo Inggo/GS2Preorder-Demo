@@ -21,7 +21,7 @@ Your shop runs on one Google Sheet. The website reads your products from it and 
 - **Inventory** is your total stock for this pre-order. **Available** works itself out from the orders.
 - Tick **New** to show a "New" badge and list the product at the top.
 - For a new photo, send it to your developer, named by SKU.
-- Changes show on the website within 30 seconds.
+- Changes show on the website within 30 seconds. Refresh the page to see them; an open page doesn't update by itself.
 
 ## Handling an order (ORDERS)
 
