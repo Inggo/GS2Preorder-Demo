@@ -570,9 +570,13 @@ function setupSheet() {
     [TAB.templates, buildTemplates],
     [TAB.settings, buildSettings],
   ];
-  for (const [name, build] of builders) {
-    if (ss.getSheetByName(name)) continue;
-    const sheet = ss.insertSheet(name);
+  // Insert every missing tab before writing any formula: a formula that names a
+  // tab that doesn't exist yet stays broken ("Argument must be a range") even
+  // after the tab is added.
+  const created = builders
+    .filter(([name]) => !ss.getSheetByName(name))
+    .map(([name, build]) => [name, build, ss.insertSheet(name)]);
+  for (const [name, build, sheet] of created) {
     build(sheet);
     sheet.setFrozenRows(1);
     sheet.getRange(1, 1, 1, sheet.getLastColumn()).setFontWeight("bold");
