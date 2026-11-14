@@ -5,5 +5,5 @@
 // strict CSP (pro) allows it.
 try {
   const theme = localStorage.getItem("theme-v1:" + location.pathname);
-  if (theme === "default" || theme === "art-crafts") document.documentElement.dataset.theme = theme;
+  if (["default", "art-crafts", "dark"].includes(theme)) document.documentElement.dataset.theme = theme;
 } catch {}

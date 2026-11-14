@@ -49,7 +49,7 @@ const MAX_MESSENGER = 200;
 // 09XXXXXXXXX, 9XXXXXXXXX, 639XXXXXXXXX or +639XXXXXXXXX (Philippine mobiles).
 const MOBILE_RE = /^(?:\+?63|0)?(9\d{9})$/;
 const HEX_RE = /^#?[0-9A-Fa-f]{6}$/;
-const THEMES = ["default", "art-crafts"]; // the first is used when SETTINGS Theme is blank
+const THEMES = ["default", "art-crafts", "dark"]; // the first is used when SETTINGS Theme is blank
 const ORDER_ID_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 
 // ---------------------------------------------------------------- web app
@@ -710,7 +710,7 @@ function buildSettings(sheet) {
     ["Close At", "", "Date and time orders close by themselves (e.g. 2026-12-01 00:00). Blank: no deadline."],
     ["Closed Message", DEFAULT_CLOSED, "What the page shows once orders are closed."],
     ["Notify Email", "", "Where new-order emails go. Blank: no emails."],
-    ["Theme", THEMES[0], `The page's look: ${THEMES.join(" or ")}. Blank: ${THEMES[0]}.`],
+    ["Theme", THEMES[0], `The page's look: ${THEMES.join(", ")}. Blank: ${THEMES[0]}.`],
     ["Primary Color", "", "Main color as #rrggbb (buttons, cart bar). Blank: the theme's default."],
     ["Accent Color", "", "Links and outlines as #rrggbb. Must be dark enough to read on white."],
     ["Submit Color", "", "The order button as #rrggbb."],
