@@ -51,7 +51,8 @@ The sheet is the whole database and the owner's admin screen. **GS2Preorder ▸ 
 | Close At | Date-time to close by itself (sheet timezone) |
 | Closed Message | Shown once closed |
 | Notify Email | Where new-order emails go (blank or `off`: none). Never sent to the page |
-| Theme / Accent / Submit Color | `#rrggbb` |
+| Theme | The page's look: `default` (clean, sans-serif), `art-crafts` (washi tape, serif headings) or `dark` (the default look on a dark page). Dropdown; blank or anything else: `default` |
+| Primary / Accent / Submit Color | `#rrggbb`. Older sheets name Primary Color `Theme Color`; both are read |
 
 Text values may use `**bold**` and `__underline__`.
 

@@ -9,7 +9,7 @@ Your shop runs on one Google Sheet. The website reads your products from it and 
 | **INVENTORY** | Your products and stock | Edit freely (except the grey columns) |
 | **ORDERS** | One row per order | Change **Status** only |
 | **TEMPLATES** | The messages you send customers | Edit the wording |
-| **SETTINGS** | Website text, closing date, colors | Edit the Value column |
+| **SETTINGS** | Website text, closing date, theme, colors | Edit the Value column |
 | **ORDER_ITEMS** | Behind-the-scenes order details | Don't touch |
 
 **Grey columns are automatic.** Never type in them, not even a space. If one shows `#REF!`, something was typed below its header: delete it and the column fixes itself.

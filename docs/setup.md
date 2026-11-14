@@ -36,7 +36,7 @@ Send the owner the `/copy` link. They click **Make a copy**, keep the name or re
 The owner does this in their copy, using `owner-guide.md` as the reference. You only review it.
 
 - **INVENTORY**: delete the sample rows and add one row per product: SKU (their own code, e.g. `stickers-001`; it names the photo file), category, name, short description, price and stock. Leave the grey columns alone.
-- **SETTINGS**: Subheading, Notes, Instagram, Messenger, Contact Fields (delete the rows for contact options the shop doesn't want), Close At, Notify Email, and colors (optional).
+- **SETTINGS**: Subheading, Notes, Instagram, Messenger, Contact Fields (delete the rows for contact options the shop doesn't want), Close At, Notify Email, Theme (`default` or `art-crafts`), and colors (optional).
 - **TEMPLATES**: replace "(your payment details here)" and "(Pickup or delivery details here.)".
 - They then send you the photos, named by SKU.
 
@@ -86,7 +86,7 @@ git clone git@github.com:Inggo/GS2Preorder.git myshop-preorder
 cd myshop-preorder
 git remote rename origin starter  # the starter stays a remote, for updates later
 git remote add origin git@github.com:<owner>/myshop-preorder.git
-git push -u origin master
+git push -u origin main
 ```
 
 Because the shop repo shares the starter's history, you can pull starter updates later (see *Updating a shop's site later*). It also means the starter's **whole commit history becomes public** in every shop repo. That's one more reason the starter must never contain shop data, secrets or anything else you wouldn't publish.
@@ -122,11 +122,11 @@ To bring starter changes (`web/app.js`, `style.css`, the workflow) into a shop:
 
 ```bash
 cd myshop-preorder
-git pull starter master  # merges the starter into the shop's own edits
-git push                 # redeploys the site
+git pull --no-rebase starter main  # merges the starter into the shop's own edits
+git push                             # redeploys the site
 ```
 
-Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
+Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. Use `--no-rebase`, never `--rebase`: once the shop has its own commits, a plain `git pull` stops with "divergent branches", and a rebase would rewrite commits that were already pushed. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
 
 ## Updating a shop's script later
 

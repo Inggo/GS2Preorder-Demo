@@ -1,13 +1,19 @@
+/* Base styles and the "art-crafts" theme. The "default" theme is at the end. */
 :root {
   color-scheme: light;
 
-  --brand: #f4a259;
+  /* Each theme sets its own default --theme-brand; a shop's web/shop.css may set
+     --brand itself, and SETTINGS Primary Color overrides both. */
+  --theme-brand: #f4a259;
+  --theme-on-brand: var(--on-light);
+  --brand: var(--theme-brand);
 
   --paper: #ffffff;
   --ink: color-mix(in oklch, var(--brand) 14%, #1e1b16);
   --ink-soft: color-mix(in oklch, var(--ink) 70%, #ffffff);
   --accent: color-mix(in oklch, var(--brand) 52%, #000000);
-  --on-brand: var(--ink);
+  --on-light: var(--ink); /* dark text for light fills, whatever the theme */
+  --on-brand: var(--theme-on-brand);
   --dot: color-mix(in oklch, var(--brand) 22%, #d9d6d0);
   --pattern: #d9d9d9;
   --rule: color-mix(in oklch, var(--brand) 12%, #e7e4de);
@@ -692,3 +698,216 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 .site-footer a { color: var(--dev-link); font-weight: 700; }
 .site-footer a:hover { color: var(--dev-hover); }
 .site-footer a:focus-visible { outline-color: var(--dev-link); }
+
+/* ------------------------------------------------------------------ themes
+   The rules above are the "art-crafts" theme (washi tape, serif headings).
+   The "default" theme (SETTINGS Theme blank or "default") overrides them below:
+   clean, modern, one sans family. "dark" is the default layout in dark colors:
+   it shares these rules and then recolors. app.js sets <html data-theme>. */
+:root:is([data-theme="default"], [data-theme="dark"]) {
+  --theme-brand: #2f62c8;
+  --theme-on-brand: #ffffff;
+  --paper: #fbfbfa;
+  --sans: "Instrument Sans", system-ui, sans-serif;
+  --serif: var(--sans);
+  --ink: color-mix(in oklch, var(--brand) 8%, #1a1b1d);
+  --ink-soft: color-mix(in oklch, var(--ink) 62%, #ffffff);
+  --tile: color-mix(in oklch, var(--brand) 3%, #f0f1f1);
+  --rule: #e4e4e1;
+  --field: #cfcfcb;
+  --submit: var(--ink);
+  --radius: 10px;
+}
+
+:is([data-theme="default"], [data-theme="dark"]) body { font: 400 1rem/1.5 var(--sans); }
+:is([data-theme="default"], [data-theme="dark"]) body::before,
+:is([data-theme="default"], [data-theme="dark"]) .tapes::before { display: none; }
+
+/* Masthead: left-aligned; the shop name is the one loud thing. */
+:is([data-theme="default"], [data-theme="dark"]) .masthead {
+  display: grid;
+  align-content: start;
+  padding: 2.5rem var(--gutter) 1rem;
+  text-align: left;
+}
+:is([data-theme="default"], [data-theme="dark"]) .shop-name {
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(3rem, 14vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+:is([data-theme="default"], [data-theme="dark"]) .logo { margin: 0; }
+:is([data-theme="default"], [data-theme="dark"]) .subheading {
+  margin-top: 0.75rem;
+  max-width: 28em;
+  font-weight: 500;
+  font-size: clamp(1.125rem, 4.2vw, 1.375rem);
+  line-height: 1.3;
+}
+:is([data-theme="default"], [data-theme="dark"]) .closed-note { margin: 1.25rem 0 0; border-radius: var(--radius); }
+:is([data-theme="default"], [data-theme="dark"]) .notes { margin: 1.5rem 0 0; max-width: 34em; }
+:is([data-theme="default"], [data-theme="dark"]) .notes li { padding-left: 1.1rem; margin-top: 0.4rem; color: var(--ink); }
+:is([data-theme="default"], [data-theme="dark"]) .notes li::before {
+  left: 0; top: 0.72em; width: 0.5rem; height: 2px; border-radius: 0; background: var(--ink-soft);
+}
+:is([data-theme="default"], [data-theme="dark"]) .handles { margin-top: 1rem; }
+
+@media (min-width: 52rem) {
+  :is([data-theme="default"], [data-theme="dark"]) .masthead {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    column-gap: 3rem;
+    padding-top: 3.5rem;
+  }
+  :is([data-theme="default"], [data-theme="dark"]) .shop-name,
+  :is([data-theme="default"], [data-theme="dark"]) .subheading,
+  :is([data-theme="default"], [data-theme="dark"]) .closed-note { grid-column: 1; }
+  :is([data-theme="default"], [data-theme="dark"]) .notes,
+  :is([data-theme="default"], [data-theme="dark"]) .handles { grid-column: 2; }
+  :is([data-theme="default"], [data-theme="dark"]) .notes { grid-row: 1 / span 2; align-self: end; margin: 0; }
+  :is([data-theme="default"], [data-theme="dark"]) .handles { grid-row: 3; }
+}
+
+/* Nav: plain text tabs; a category's color shows as a small swatch. */
+:is([data-theme="default"], [data-theme="dark"]) .tapes ul { gap: 0.25rem; padding: 0.5rem 0.75rem 0.5rem 0; }
+:is([data-theme="default"], [data-theme="dark"]) .tape,
+:is([data-theme="default"], [data-theme="dark"]) .category-head,
+:is([data-theme="default"], [data-theme="dark"]) .line-group-title,
+:is([data-theme="default"], [data-theme="dark"]) .total {
+  background: none;
+  clip-path: none;
+  transform: none;
+}
+:is([data-theme="default"], [data-theme="dark"]) .tape {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+:is([data-theme="default"], [data-theme="dark"]) .tape::before,
+:is([data-theme="default"], [data-theme="dark"]) .category-head::before,
+:is([data-theme="default"], [data-theme="dark"]) .line-group-title::before {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 3px;
+  background: var(--tint);
+}
+:is([data-theme="default"], [data-theme="dark"]) .tape:hover { background: var(--tile); color: var(--ink); }
+:is([data-theme="default"], [data-theme="dark"]) .tape[aria-current="true"] {
+  background: var(--tile);
+  color: var(--ink);
+  text-decoration: none;
+}
+:is([data-theme="default"], [data-theme="dark"]) .nav-logo { font-weight: 700; font-stretch: 75%; font-size: 1.3rem; }
+
+/* Categories */
+:is([data-theme="default"], [data-theme="dark"]) .category { padding-top: 3rem; }
+:is([data-theme="default"], [data-theme="dark"]) .category-head {
+  align-items: center;
+  gap: 0 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0;
+}
+:is([data-theme="default"], [data-theme="dark"]) .category-head::before { width: 0.8rem; height: 0.8rem; }
+:is([data-theme="default"], [data-theme="dark"]) .category-head h2 {
+  font-weight: 650;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+}
+:is([data-theme="default"], [data-theme="dark"]) .category-head p { color: var(--ink-soft); font-weight: 400; }
+
+/* Products: photo on a soft tile, text below with no box. */
+:is([data-theme="default"], [data-theme="dark"]) .photo {
+  padding: 8%;
+  background: var(--tile);
+  border: 0;
+  border-radius: var(--radius);
+}
+:is([data-theme="default"], [data-theme="dark"]) .product-name { margin-top: 0.75rem; font-weight: 600; }
+:is([data-theme="default"], [data-theme="dark"]) .product-desc { color: var(--ink-soft); }
+:is([data-theme="default"], [data-theme="dark"]) .product-meta { margin: 0.35rem 0 0.75rem; font-variant-numeric: tabular-nums; }
+:is([data-theme="default"], [data-theme="dark"]) .price { font-weight: 600; }
+:is([data-theme="default"], [data-theme="dark"]) .stock { font-size: 0.875rem; }
+:is([data-theme="default"], [data-theme="dark"]) .badge-new {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 600;
+}
+
+:is([data-theme="default"], [data-theme="dark"]) .add,
+:is([data-theme="default"], [data-theme="dark"]) .stepper,
+:is([data-theme="default"], [data-theme="dark"]) .step,
+:is([data-theme="default"], [data-theme="dark"]) .primary,
+:is([data-theme="default"], [data-theme="dark"]) .field input:not([type="radio"]),
+:is([data-theme="default"], [data-theme="dark"]) .choice label { border-radius: var(--radius); }
+:is([data-theme="default"], [data-theme="dark"]) .add {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+:is([data-theme="default"], [data-theme="dark"]) .add:hover { background: var(--ink); color: var(--paper); }
+:is([data-theme="default"], [data-theme="dark"]) .count,
+:is([data-theme="default"], [data-theme="dark"]) .nav-cart,
+:is([data-theme="default"], [data-theme="dark"]) .cartbar-action { font-weight: 600; }
+:is([data-theme="default"], [data-theme="dark"]) .nav-cart { border-radius: var(--radius); }
+
+:is([data-theme="default"], [data-theme="dark"]) .cartbar-button {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* Order sheet */
+:is([data-theme="default"], [data-theme="dark"]) .sheet h2 { font-weight: 650; font-size: 1.5rem; letter-spacing: -0.01em; }
+:is([data-theme="default"], [data-theme="dark"]) .line-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+:is([data-theme="default"], [data-theme="dark"]) .line-photo { background: var(--tile); border: 0; border-radius: 6px; }
+:is([data-theme="default"], [data-theme="dark"]) .total {
+  margin: 0 0 1.75rem;
+  padding: 0.85rem 0 0;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 650;
+}
+:is([data-theme="default"], [data-theme="dark"]) .form-title { font-weight: 650; font-size: 1.15rem; }
+:is([data-theme="default"], [data-theme="dark"]) #order-form .primary { font-family: var(--sans); font-weight: 600; font-size: 1.05rem; }
+:is([data-theme="default"], [data-theme="dark"]) .order-id { font-weight: 700; font-stretch: 75%; font-size: 3rem; letter-spacing: 0; }
+
+/* "dark": the default layout on a dark page. --brand stays a fill with dark text,
+   so a light or mid Primary Color works best. SETTINGS Accent Color is ignored
+   (it's chosen for white); --accent is the brand lightened instead. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: color-mix(in oklch, var(--brand) 3%, #141516);
+  --ink: #ecebe8;
+  --ink-soft: color-mix(in oklch, var(--ink) 62%, var(--paper));
+  --on-light: #1a1b1d;
+  --accent: color-mix(in oklch, var(--brand) 62%, #ffffff);
+  --tile: color-mix(in oklch, var(--brand) 3%, #232427);
+  --rule: #2f3033;
+  --field: #4a4b4f;
+  --submit: var(--ink);
+  --on-submit: var(--on-light);
+  --leaf: #8bcb93;
+  --gumamela: #f28b84;
+  --dev-wash: linear-gradient(to top left, #ffb0aa1c, #2803396b), #17131a;
+  --dev-text: #e3a9c5;
+  --dev-link: #f4c6dd;
+  --dev-hover: #ffb0aa;
+}
+[data-theme="dark"] .badge-new { background: #c43c45; }
+[data-theme="dark"] .product-desc { color: color-mix(in oklch, var(--ink) 80%, var(--paper)); }
+[data-theme="dark"] dialog::backdrop { background: rgb(0 0 0 / 0.6); }
+[data-theme="dark"] .cartbar-button { box-shadow: 0 8px 24px rgb(0 0 0 / 0.5); }
+[data-theme="dark"] .site-footer { border-top-color: #4d2742; }

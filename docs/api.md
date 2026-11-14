@@ -29,11 +29,11 @@ Both return the same JSON bodies. Only the transport differs, and `api` in `web/
 
 ```json
 {"subheading":"…","notes":["…"],"formNote":"","orderNote":"","instagram":"myshop","messenger":"myshop","handles":["Instagram","Messenger"],"contactFields":["Email","Messenger","Instagram"],
- "themeColor":"#f4a259","accentColor":"","submitColor":"","open":true,
+ "theme":"default","themeColor":"#2f62c8","accentColor":"","submitColor":"","open":true,
  "closedMessage":"Pre-orders are closed. Thank you!","closesAt":"2026-12-01T16:00:00.000Z"}
 ```
 
-`handles` lists which of `instagram`/`messenger` are set, in SETTINGS row order (lite only; when it's missing, the page shows just Instagram). `messenger` is a username/ID or an `https://` link. `contactFields` lists the contact options the form offers, in order (lite only; when it's missing, as from pro, the page offers Email and Instagram). Colors are `#rrggbb` or `""`. `closesAt` is omitted without a deadline; an open page closes itself at that instant.
+`handles` lists which of `instagram`/`messenger` are set, in SETTINGS row order (lite only; when it's missing, the page shows just Instagram). `messenger` is a username/ID or an `https://` link. `contactFields` lists the contact options the form offers, in order (lite only; when it's missing, as from pro, the page offers Email and Instagram). `theme` is `default`, `art-crafts` or `dark`, always sent (the page treats a missing or unknown one as `default`). `themeColor` is SETTINGS Primary Color. Colors are `#rrggbb` or `""`. `closesAt` is omitted without a deadline; an open page closes itself at that instant.
 
 ## Order
 
