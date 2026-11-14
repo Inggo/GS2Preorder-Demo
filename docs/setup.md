@@ -84,7 +84,7 @@ The starter repo (this one) is **private**, so the owner never sees or needs acc
 ```bash
 git clone git@github.com:Inggo/GS2Preorder.git myshop-preorder
 cd myshop-preorder
-git remote rename origin starter                        # the starter stays a remote, for updates later
+git remote rename origin starter  # the starter stays a remote, for updates later
 git remote add origin git@github.com:<owner>/myshop-preorder.git
 git push -u origin master
 ```
@@ -122,8 +122,8 @@ To bring starter changes (`web/app.js`, `style.css`, the workflow) into a shop:
 
 ```bash
 cd myshop-preorder
-git pull starter master          # merges the starter into the shop's own edits
-git push                       # redeploys the site
+git pull starter master  # merges the starter into the shop's own edits
+git push                 # redeploys the site
 ```
 
 Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
