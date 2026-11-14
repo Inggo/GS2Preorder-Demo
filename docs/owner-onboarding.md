@@ -33,6 +33,7 @@ Grey columns fill themselves in. Never type in them. For more detail on every ta
   - **Contact Fields**: how customers can ask you to reach them. Delete the rows you don't want (Email, Messenger, Instagram).
   - **Close At**: when orders close by themselves, e.g. `2026-12-01 00:00`
   - **Notify Email**: where your new-order alerts go
+  - **Theme**: the look of your site, `default` (clean and simple) or `art-crafts` (washi tape, playful)
   - Colors are optional.
 - **TEMPLATES**: replace "(your payment details here)" and "(Pickup or delivery details here.)" with your own details.
 

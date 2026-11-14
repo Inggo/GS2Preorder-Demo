@@ -8,6 +8,8 @@ const CONFIGURED = SERVER || /^https:\/\/script\.google\.com\//.test(API);
 const MAX_PER_ITEM = 99;
 const CART_KEY = "cart-v1:" + location.pathname;
 const TAPE_TINTS = 6;
+const THEMES = ["default", "art-crafts"]; // the first is used when settings name none; theme.js lists them too
+const THEME_KEY = "theme-v1:" + location.pathname; // read early by theme.js
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -639,6 +641,11 @@ function applySettings(data) {
     const ms = Date.parse(data.closesAt) - Date.now();
     if (ms > 0 && ms < 2 ** 31) closeTimer = setTimeout(() => closeShop(data.closedMessage), ms);
   }
+  const theme = THEMES.includes(data.theme) ? data.theme : THEMES[0];
+  document.documentElement.dataset.theme = theme;
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {}
   const root = document.documentElement.style;
   if (isHex(data.themeColor)) root.setProperty("--brand", data.themeColor);
   if (isHex(data.accentColor)) root.setProperty("--accent", data.accentColor);

@@ -4,7 +4,7 @@ Most of a shop's look is set by the owner in SETTINGS (text, colors). Everything
 
 ## Keeping shops easy to update
 
-Shops pull starter updates with `git pull starter master`. Git merges them automatically unless the starter and the shop changed the same lines. So, in a shop repo:
+Shops pull starter updates with `git pull starter main`. Git merges them automatically unless the starter and the shop changed the same lines. So, in a shop repo:
 
 - **CSS goes only in `web/shop.css`.** It loads after `style.css`, so it can override anything, e.g. `:root { --brand: #ffb700; }`, a different `body::before` background, or logo sizing. Leave `style.css` exactly as the starter has it.
 - **`web/index.html`**: edit only what has to be per shop: `<head>` (title, description, `og:` tags, icons) and the name or logo in the masthead and top bar.
@@ -24,10 +24,13 @@ Shops pull starter updates with `git pull starter master`. Git merges them autom
 
 ## Colors and design
 
-- All brand tones derive from `--brand` (fills: buttons, stepper, cart bar). Its default is in `web/style.css`; a shop's own default goes in `web/shop.css`. SETTINGS **Theme Color** overrides both. `--accent` (links, Add buttons) is derived from it to stay readable on white, unless SETTINGS **Accent Color** sets it.
-- Category tapes cycle through `--tape-1…6`. The "New" section uses `--tape-new`.
-- The background is a light dot grid (`body::before`, `--pattern`).
-- Fonts: Young Serif (headings, prices) and Hanken Grotesk (everything else), from Google Fonts.
+- SETTINGS **Theme** picks the page's look, set on `<html data-theme>`:
+  - `default` (also when blank): clean and modern, one sans family (Instrument Sans, the shop name set condensed). Left-aligned masthead, photos on light grey tiles, category colors as small squares.
+  - `art-crafts`: washi-tape category bar and headings, a light dot grid (`body::before`, `--pattern`), Young Serif headings with Hanken Grotesk text, centered masthead.
+  
+  In `web/style.css` the unscoped rules are art-crafts and the `[data-theme="default"]` rules at the end override them. A new theme is another `[data-theme="…"]` block, plus its name in `THEMES` (`Code.gs`, `app.js`, `web/theme.js`) and in pro's `shop.Themes`. `web/theme.js` re-applies the theme the visitor last saw before the page draws, so it doesn't flash while settings load. In `shop.css`, override a theme's own variables with the same selector, e.g. `:root[data-theme="default"] { --tile: #f4f4f4; }`.
+- All brand tones derive from `--brand` (fills: buttons, stepper, cart bar). Its default is in `web/style.css`; a shop's own default goes in `web/shop.css`. SETTINGS **Primary Color** overrides both. `--accent` (links, Add buttons) is derived from it to stay readable on white, unless SETTINGS **Accent Color** sets it.
+- Category tints cycle through `--tape-1…6`. The "New" section uses `--tape-new`.
 - The footer credits the developer and keeps its own colors (`--dev-*`).
 
 ## Philippines-specific defaults

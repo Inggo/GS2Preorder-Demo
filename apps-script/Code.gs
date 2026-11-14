@@ -49,6 +49,7 @@ const MAX_MESSENGER = 200;
 // 09XXXXXXXXX, 9XXXXXXXXX, 639XXXXXXXXX or +639XXXXXXXXX (Philippine mobiles).
 const MOBILE_RE = /^(?:\+?63|0)?(9\d{9})$/;
 const HEX_RE = /^#?[0-9A-Fa-f]{6}$/;
+const THEMES = ["default", "art-crafts"]; // the first is used when SETTINGS Theme is blank
 const ORDER_ID_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 
 // ---------------------------------------------------------------- web app
@@ -445,7 +446,9 @@ function readSettings(ss) {
         if (at) st.closeAt = at;
         break;
       }
-      case "theme color": st.themeColor = parseColor(text); break;
+      case "theme": st.theme = parseTheme(text); break;
+      case "primary color":
+      case "theme color": st.themeColor = parseColor(text); break; // "Theme Color": its old name, still in older sheets
       case "accent color": st.accentColor = parseColor(text); break;
       case "submit color": st.submitColor = parseColor(text); break;
     }
@@ -473,6 +476,7 @@ function publicSettings(st, now) {
     messenger: st.messenger || "",
     handles: st.handles || [],
     contactFields: contactMethods(st),
+    theme: st.theme || THEMES[0],
     themeColor: st.themeColor || "",
     accentColor: st.accentColor || "",
     submitColor: st.submitColor || "",
@@ -512,6 +516,11 @@ function parseTime(v, tz) {
   return Utilities.parseDate(s, tz, "yyyy-MM-dd HH:mm").getTime();
 }
 
+/** A THEMES name, matched case-insensitively; anything else → "" (the default). */
+function parseTheme(v) {
+  return THEMES.find((t) => t === v.toLowerCase()) || "";
+}
+
 /** "#RRGGBB" or "rrggbb" → "#rrggbb"; anything else → "". */
 function parseColor(v) {
   return HEX_RE.test(v) ? "#" + v.replace(/^#/, "").toLowerCase() : "";
@@ -541,6 +550,7 @@ function checkSetup() {
       isOpen(st, Date.now()) ? "Orders are OPEN." : "Orders are CLOSED.",
       `Customers can be reached by: ${contactMethods(st).join(", ")}.`,
       st.closeAt ? `Orders close on ${new Date(st.closeAt).toString()}.` : "No closing date set.",
+      `Theme: ${st.theme || THEMES[0]}.`,
       st.notifyEmail ? `New-order emails go to ${st.notifyEmail}.` : "No Notify Email set: you won't get new-order emails.",
     ];
     ui.alert("GS2Preorder setup looks good", lines.join("\n"), ui.ButtonSet.OK);
@@ -700,13 +710,16 @@ function buildSettings(sheet) {
     ["Close At", "", "Date and time orders close by themselves (e.g. 2026-12-01 00:00). Blank: no deadline."],
     ["Closed Message", DEFAULT_CLOSED, "What the page shows once orders are closed."],
     ["Notify Email", "", "Where new-order emails go. Blank: no emails."],
-    ["Theme Color", "", "Main color as #rrggbb (buttons, cart bar). Blank: the default."],
+    ["Theme", THEMES[0], `The page's look: ${THEMES.join(" or ")}. Blank: ${THEMES[0]}.`],
+    ["Primary Color", "", "Main color as #rrggbb (buttons, cart bar). Blank: the theme's default."],
     ["Accent Color", "", "Links and outlines as #rrggbb. Must be dark enough to read on white."],
     ["Submit Color", "", "The order button as #rrggbb."],
   ];
   sheet.getRange(1, 1, rows.length, 3).setValues(rows);
   const rowOf = (name) => rows.findIndex((r) => r[0] === name) + 1;
   sheet.getRange(rowOf("Orders Open"), 2).insertCheckboxes().setValue(true);
+  sheet.getRange(rowOf("Theme"), 2).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(THEMES, true).setAllowInvalid(false).build());
   sheet.getRange(rowOf("Close At"), 2).setNumberFormat("yyyy-mm-dd hh:mm");
   sheet.getRange(rowOf("Contact Fields"), 2, CONTACT_METHODS.length, 1).setDataValidation(
     SpreadsheetApp.newDataValidation().requireValueInList(CONTACT_METHODS, true).setAllowInvalid(false).build());

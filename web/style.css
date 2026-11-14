@@ -1,3 +1,4 @@
+/* Base styles and the "art-crafts" theme. The "default" theme is at the end. */
 :root {
   color-scheme: light;
 
@@ -692,3 +693,184 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 .site-footer a { color: var(--dev-link); font-weight: 700; }
 .site-footer a:hover { color: var(--dev-hover); }
 .site-footer a:focus-visible { outline-color: var(--dev-link); }
+
+/* ------------------------------------------------------------------ themes
+   The rules above are the "art-crafts" theme (washi tape, serif headings).
+   The "default" theme (SETTINGS Theme blank or "default") overrides them below:
+   clean, modern, one sans family. app.js sets <html data-theme>. */
+:root[data-theme="default"] {
+  --sans: "Instrument Sans", system-ui, sans-serif;
+  --serif: var(--sans);
+  --ink: color-mix(in oklch, var(--brand) 8%, #1a1b1d);
+  --ink-soft: color-mix(in oklch, var(--ink) 62%, #ffffff);
+  --tile: color-mix(in oklch, var(--brand) 3%, #f0f1f1);
+  --rule: #e4e4e1;
+  --field: #cfcfcb;
+  --submit: var(--ink);
+  --radius: 10px;
+}
+
+[data-theme="default"] body { font: 400 1rem/1.5 var(--sans); }
+[data-theme="default"] body::before,
+[data-theme="default"] .tapes::before { display: none; }
+
+/* Masthead: left-aligned; the shop name is the one loud thing. */
+[data-theme="default"] .masthead {
+  display: grid;
+  align-content: start;
+  padding: 2.5rem var(--gutter) 1rem;
+  text-align: left;
+}
+[data-theme="default"] .shop-name {
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(3rem, 14vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+[data-theme="default"] .logo { margin: 0; }
+[data-theme="default"] .subheading {
+  margin-top: 0.75rem;
+  max-width: 28em;
+  font-weight: 500;
+  font-size: clamp(1.125rem, 4.2vw, 1.375rem);
+  line-height: 1.3;
+}
+[data-theme="default"] .closed-note { margin: 1.25rem 0 0; border-radius: var(--radius); }
+[data-theme="default"] .notes { margin: 1.5rem 0 0; max-width: 34em; }
+[data-theme="default"] .notes li { padding-left: 1.1rem; margin-top: 0.4rem; color: var(--ink); }
+[data-theme="default"] .notes li::before {
+  left: 0; top: 0.72em; width: 0.5rem; height: 2px; border-radius: 0; background: var(--ink-soft);
+}
+[data-theme="default"] .handles { margin-top: 1rem; }
+
+@media (min-width: 52rem) {
+  [data-theme="default"] .masthead {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    column-gap: 3rem;
+    padding-top: 3.5rem;
+  }
+  [data-theme="default"] .shop-name,
+  [data-theme="default"] .subheading,
+  [data-theme="default"] .closed-note { grid-column: 1; }
+  [data-theme="default"] .notes,
+  [data-theme="default"] .handles { grid-column: 2; }
+  [data-theme="default"] .notes { grid-row: 1 / span 2; align-self: end; margin: 0; }
+  [data-theme="default"] .handles { grid-row: 3; }
+}
+
+/* Nav: plain text tabs; a category's color shows as a small swatch. */
+[data-theme="default"] .tapes ul { gap: 0.25rem; padding: 0.5rem 0.75rem 0.5rem 0; }
+[data-theme="default"] .tape,
+[data-theme="default"] .category-head,
+[data-theme="default"] .line-group-title,
+[data-theme="default"] .total {
+  background: none;
+  clip-path: none;
+  transform: none;
+}
+[data-theme="default"] .tape {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+[data-theme="default"] .tape::before,
+[data-theme="default"] .category-head::before,
+[data-theme="default"] .line-group-title::before {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 3px;
+  background: var(--tint);
+}
+[data-theme="default"] .tape:hover { background: var(--tile); color: var(--ink); }
+[data-theme="default"] .tape[aria-current="true"] {
+  background: var(--tile);
+  color: var(--ink);
+  text-decoration: none;
+}
+[data-theme="default"] .nav-logo { font-weight: 700; font-stretch: 75%; font-size: 1.3rem; }
+
+/* Categories */
+[data-theme="default"] .category { padding-top: 3rem; }
+[data-theme="default"] .category-head {
+  align-items: center;
+  gap: 0 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0;
+}
+[data-theme="default"] .category-head::before { width: 0.8rem; height: 0.8rem; }
+[data-theme="default"] .category-head h2 {
+  font-weight: 650;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+}
+[data-theme="default"] .category-head p { color: var(--ink-soft); font-weight: 400; }
+
+/* Products: photo on a soft tile, text below with no box. */
+[data-theme="default"] .photo {
+  padding: 8%;
+  background: var(--tile);
+  border: 0;
+  border-radius: var(--radius);
+}
+[data-theme="default"] .product-name { margin-top: 0.75rem; font-weight: 600; }
+[data-theme="default"] .product-desc { color: var(--ink-soft); }
+[data-theme="default"] .product-meta { margin: 0.35rem 0 0.75rem; font-variant-numeric: tabular-nums; }
+[data-theme="default"] .price { font-weight: 600; }
+[data-theme="default"] .stock { font-size: 0.875rem; }
+[data-theme="default"] .badge-new {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 600;
+}
+
+[data-theme="default"] .add,
+[data-theme="default"] .stepper,
+[data-theme="default"] .step,
+[data-theme="default"] .primary,
+[data-theme="default"] .field input:not([type="radio"]),
+[data-theme="default"] .choice label { border-radius: var(--radius); }
+[data-theme="default"] .add {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+[data-theme="default"] .add:hover { background: var(--ink); color: var(--paper); }
+[data-theme="default"] .count,
+[data-theme="default"] .nav-cart,
+[data-theme="default"] .cartbar-action { font-weight: 600; }
+[data-theme="default"] .nav-cart { border-radius: var(--radius); }
+
+[data-theme="default"] .cartbar-button {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* Order sheet */
+[data-theme="default"] .sheet h2 { font-weight: 650; font-size: 1.5rem; letter-spacing: -0.01em; }
+[data-theme="default"] .line-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+[data-theme="default"] .line-photo { background: var(--tile); border: 0; border-radius: 6px; }
+[data-theme="default"] .total {
+  margin: 0 0 1.75rem;
+  padding: 0.85rem 0 0;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 650;
+}
+[data-theme="default"] .form-title { font-weight: 650; font-size: 1.15rem; }
+[data-theme="default"] #order-form .primary { font-family: var(--sans); font-weight: 600; font-size: 1.05rem; }
+[data-theme="default"] .order-id { font-weight: 700; font-stretch: 75%; font-size: 3rem; letter-spacing: 0; }
