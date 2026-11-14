@@ -6,7 +6,7 @@ Most of a shop's look is set by the owner in SETTINGS (text, colors). Everything
 
 Shops pull starter updates with `git pull --no-rebase starter main`. Git merges them automatically unless the starter and the shop changed the same lines. So, in a shop repo:
 
-- **CSS goes only in `web/shop.css`.** It loads after `style.css`, so it can override anything, e.g. `:root { --brand: #ffb700; }`, a different `body::before` background, or logo sizing. Leave `style.css` exactly as the starter has it.
+- **CSS goes only in `web/shop.css`.** It's this shop's own styles: empty in the starter, and starter updates never touch it. It loads after `style.css`, so it can override anything, e.g. `:root { --brand: #ffb700; }`, a different `body::before` background, or logo sizing. Leave `style.css` exactly as the starter has it.
 - **`web/index.html`**: edit only what has to be per shop: `<head>` (title, description, `og:` tags, icons) and the name or logo in the masthead and top bar.
 - **New files** (logo, icons, `share.jpg`, background images) never conflict.
 - **Don't change `app.js` or `Code.gs` per shop.** If a shop needs a behavior, add it to the starter behind a SETTINGS row, so every shop gets it.

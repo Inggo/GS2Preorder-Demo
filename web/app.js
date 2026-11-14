@@ -3,13 +3,13 @@
 const CONFIG = window.SHOP_CONFIG || {};
 const SERVER = CONFIG.backend === "server";
 const API = CONFIG.api || (SERVER ? "api/" : "");
-const CONFIGURED = SERVER || /^https:\/\/script\.google\.com\//.test(API);
+const CONFIGURED = SERVER || API.startsWith("https://script.google.com/");
 
 const MAX_PER_ITEM = 99;
 const CART_KEY = "cart-v1:" + location.pathname;
 const TAPE_TINTS = 6;
-const THEMES = ["default", "art-crafts", "dark"]; // the first is used when settings name none; theme.js lists them too
-const THEME_KEY = "theme-v1:" + location.pathname; // read early by theme.js
+const THEMES = ["default", "art-crafts", "dark"];
+const THEME_KEY = "theme-v1:" + location.pathname;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -427,13 +427,11 @@ function openOrder() {
   orderDialog.showModal();
 }
 
-// The shop's own links under the notes: [href, text] for a SETTINGS value.
 const HANDLE_LINK = {
   Instagram: (v) => [`https://www.instagram.com/${encodeURIComponent(v)}/`, "@" + v],
-  Messenger: (v) => (/^https:\/\//.test(v) ? [v, "Message us"] : [`https://m.me/${encodeURIComponent(v)}`, v]),
+  Messenger: (v) => (v.startsWith("https://") ? [v, "Message us"] : [`https://m.me/${encodeURIComponent(v)}`, v]),
 };
 
-/** Shows the filled-in handles in SETTINGS row order (pro sends no `handles`: Instagram only). */
 function applyHandles(data) {
   const box = $(".handles");
   const order = Array.isArray(data.handles) ? data.handles : ["Instagram"];
@@ -453,11 +451,9 @@ function applyHandles(data) {
   box.hidden = els.every((el) => el.hidden);
 }
 
-// The pro (Go) server doesn't send contactFields; it takes Email and Instagram.
 const DEFAULT_CONTACTS = ["Email", "Instagram"];
 const CONTACT_PHRASE = { Email: "email you", Messenger: "message you on Messenger", Instagram: "message you on Instagram" };
 
-/** Shows only the contact options the shop offers, in its order; one option needs no choice. */
 function applyContactFields(list) {
   const methods = (Array.isArray(list) ? list : DEFAULT_CONTACTS).filter((m) => m in CONTACT_PHRASE);
   if (!methods.length) methods.push(...DEFAULT_CONTACTS);
@@ -534,7 +530,6 @@ async function submitOrder(event) {
     items: [...state.cart].map(([sku, quantity]) => ({ sku, quantity })),
     website: f.website.value,
   };
-  // Only when chosen: the pro server rejects fields it doesn't know.
   if (body.contactVia === "Messenger") body.messenger = f.messenger.value;
 
   const button = $("button[type=submit]", form);
@@ -651,7 +646,7 @@ function applySettings(data) {
     root.setProperty("--brand", data.themeColor);
     root.setProperty("--on-brand", contrast(data.themeColor, "#ffffff") >= 4.5 ? "#ffffff" : "var(--on-light)");
   }
-  if (isHex(data.accentColor) && theme !== "dark") root.setProperty("--accent", data.accentColor); // chosen for white
+  if (isHex(data.accentColor) && theme !== "dark") root.setProperty("--accent", data.accentColor);
   $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
   if (isHex(data.submitColor)) {
     root.setProperty("--submit", data.submitColor);
@@ -759,7 +754,7 @@ orderDialog.addEventListener("click", (e) => {
 });
 
 loadCart();
-applyContactFields(); // until the settings arrive
+applyContactFields();
 watchMasthead();
 watchCartbar();
 loadShop();

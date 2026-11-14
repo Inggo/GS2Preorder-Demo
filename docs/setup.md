@@ -128,7 +128,7 @@ git push                             # redeploys the site
 
 If the pull changed `apps-script/Code.gs` (`git diff --stat ORIG_HEAD.. -- apps-script`), the site isn't fully updated until you also update the shop's script (next section). New pages can depend on new fields from the script, e.g. SETTINGS `Theme` does nothing until the script sends `theme`.
 
-Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. Use `--no-rebase`, never `--rebase`: once the shop has its own commits, a plain `git pull` stops with "divergent branches", and a rebase would rewrite commits that were already pushed. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
+Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. Shops that edited `web/shop.css` get a one-time conflict on the pull that emptied the starter's copy: keep the shop's CSS and drop the old `/* This shop's own styles … */` comment line. Use `--no-rebase`, never `--rebase`: once the shop has its own commits, a plain `git pull` stops with "divergent branches", and a rebase would rewrite commits that were already pushed. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
 
 ## Updating a shop's script later
 

@@ -29,8 +29,9 @@ It is derived from the first production build (the Go server repo), which is the
 - `appsscript.json` lists the OAuth scopes explicitly (`spreadsheets.currentonly`, `script.send_mail`, `script.container.ui`). A new Apps Script service may need a new scope, which every owner then has to re-authorize, so avoid adding any.
 - Settings that must stay private (`Notify Email`) are never returned by `publicSettings`.
 - Frontend: build DOM with `textContent`/`<template>`, never `innerHTML` with data. Use relative URLs only. The cart key is per path (`cart-v1:<pathname>`), because all of a GitHub account's Pages sites share one origin.
-- **Per-shop changes stay mergeable.** Shop repos pull starter updates with `git pull --no-rebase starter main`. In a shop repo, CSS goes only in `web/shop.css`, `index.html` changes stay limited to `<head>` and the name/logo, and `app.js`/`Code.gs` aren't changed per shop. In this starter, `web/shop.css` must stay the one-line placeholder: never edit it, or every shop's update conflicts. Shop needs become starter features behind a SETTINGS row.
+- **Per-shop changes stay mergeable.** Shop repos pull starter updates with `git pull --no-rebase starter main`. In a shop repo, CSS goes only in `web/shop.css`, `index.html` changes stay limited to `<head>` and the name/logo, and `app.js`/`Code.gs` aren't changed per shop. In this starter, `web/shop.css` must stay empty: never edit it, or every shop's update conflicts. Shop needs become starter features behind a SETTINGS row.
 - Design: all brand colors derive from `--brand` via `color-mix`. `--brand` is only used as a fill. Category tints mark categories (washi tape in `art-crafts`, small squares in `default`). SETTINGS `Theme` picks the look via `<html data-theme>`: unscoped CSS is art-crafts, the default rules (shared with `dark`) override it, and `dark` then recolors. Text on a `--brand` fill uses `--on-light`, never `--ink`, which is light in `dark`. The theme list is in `Code.gs`, `app.js`, `web/theme.js` and pro's `shop.Themes`; keep them in step. Nav and cart bar use `position: fixed`, not sticky (Firefox Android bug).
+- Files in `web/` carry no comments (HTML, CSS or JS); they're served as is. Notes go in `docs/web/<file>.md`, which is never deployed. Update those instead of adding comments.
 - PH defaults (₱, Manila time, PH mobile numbers) are listed in `docs/customizing.md`. Change them everywhere at once.
 
 ## Checking changes
@@ -39,6 +40,9 @@ There's no test suite. Before finishing a change:
 
 ```bash
 node --check web/app.js
+node --check web/theme.js
+grep -rnE --include='*.html' '<!--' web                                            # no comments in web/;
+grep -rnE --include='*.css' --include='*.js' '/\*|(^|[^:])//' web                    # both must print nothing
 node -e 'new Function(require("fs").readFileSync("apps-script/Code.gs","utf8"))'   # syntax only
 bash -n photos.sh
 python3 -m http.server -d web 8000                                                 # manual check
