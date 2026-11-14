@@ -1,6 +1,6 @@
 # The Google Sheet
 
-The sheet is the whole database and the owner's admin screen. **Pre-order ▸ Set up sheet** (`setupSheet` in `apps-script/Code.gs`) builds every tab below with its headers, formulas and formatting. The layout matches the Go "pro" server's, so a shop can move to pro without changing its sheet (see `pro.md`).
+The sheet is the whole database and the owner's admin screen. **GS2Preorder ▸ Set up sheet** (`setupSheet` in `apps-script/Code.gs`) builds every tab below with its headers, formulas and formatting. The layout matches the Go "pro" server's, so a shop can move to pro without changing its sheet (see `pro.md`).
 
 ## Tabs
 

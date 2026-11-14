@@ -55,7 +55,7 @@ One row per status. These words get replaced automatically:
 
 The website works through a small script inside your sheet, which you approved when the shop was set up ("Google hasn't verified this app" → Advanced → Allow). It can only open **this one sheet** and send you order alerts.
 
-- **Don't** remove "Pre-order" from <https://myaccount.google.com/permissions>, or the shop stops taking orders.
+- **Don't** remove "GS2Preorder" from <https://myaccount.google.com/permissions>, or the shop stops taking orders.
 - **Don't** rename the tabs or the column headers.
 - You can make a backup anytime: File ▸ Make a copy.
 

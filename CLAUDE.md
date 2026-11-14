@@ -4,7 +4,7 @@ Guidance for Claude Code in this repository.
 
 ## What this is
 
-The **lite** edition of a Google-Sheets-backed pre-order site, used as a GitHub template: one repo per shop, created with "Use this template". It contains no shop-identifying data. Keep it that way: placeholders are "My Shop", and real names, URLs and photos belong only in each shop's own repo.
+The **lite** edition of a Google-Sheets-backed pre-order site, kept private and pushed into one public repo per shop, which the shop owner owns, with the developer as a collaborator. Shop repos share this repo's history, so they can `git pull` its updates, and **everything ever committed here becomes public**. It contains no shop-identifying data. Keep it that way: placeholders are "My Shop", and real names, URLs and photos belong only in each shop's own repo.
 
 - `web/`: static frontend for GitHub Pages (plain HTML/CSS/vanilla JS, no build). `config.js` holds the backend URL.
 - `apps-script/`: the backend. It's a container-bound Apps Script web app pasted into each shop's sheet, and runs as the owner.
@@ -15,6 +15,13 @@ It is derived from the first production build (the Go server repo), which is the
 
 ## Rules
 
+- **No tenant data, ever.** This repo is the starter that every shop repo is pushed from, and its full history is public in each one. Never commit anything that belongs to a tenant, not even temporarily, in a test or in an example:
+  - shop names, logos, photos, product lists or prices
+  - Apps Script deployment URLs or sheet IDs
+  - owner or customer names, emails, phone numbers or Instagram handles
+  - GitHub usernames or Pages URLs
+
+  Use the placeholders ("My Shop", `<owner>`, `AKfy…`). Tenant changes go only in that tenant's repo. If tenant data was ever committed here, tell the user; deleting the file doesn't remove it from history.
 - **Stay compatible with pro.** The sheet layout (`docs/sheet.md`) and the JSON bodies (`docs/api.md`) must match what the Go server reads and returns. All backend calls in `app.js` go through the `api` object, which supports `backend: "apps-script"` and `backend: "server"`. Don't call `fetch` for the backend anywhere else.
 - **Apps Script transport**: replies are always HTTP 200, with the real status in `body.status`. POSTs are sent as `text/plain` (no `Content-Type` header), because Apps Script can't answer a CORS preflight.
 - **Header-row formulas**: every computed column is one `={"Header"; MAP(...)}` in row 1. The script writes only ORDERS A–J and ORDER_ITEMS A–F. Text is written with a leading `'` (the Apps Script equivalent of `RAW`), which blocks formula injection and keeps leading zeros.

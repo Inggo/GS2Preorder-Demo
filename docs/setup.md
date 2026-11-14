@@ -1,16 +1,18 @@
 # Onboarding a shop (operator runbook)
 
-This takes about an hour per shop, most of it filling in products. The owner needs a Google account (a personal Gmail is safest, see *Troubleshooting*) and a GitHub account, because the shop's repo and site live in their account. You need a GitHub account (`Inggo`) with collaborator access to their repo and, for photos, ImageMagick.
+This takes about an hour per shop, most of it filling in products. The owner needs a Google account (a personal Gmail is safest, see *Troubleshooting*) and a GitHub account, because the shop's repo and site live in their account. Your GitHub account needs collaborator access to their repo and you need ImageMagick for optimizing Photos.
 
 **There is no API key.** The lite backend is an Apps Script that lives *inside the owner's sheet* and runs as the owner. In place of an API key there's a one-time **authorization** (step 4), where the owner clicks through Google's "unverified app" screens. That step is where owners get nervous, so it's covered in detail. (The pro version does use a Google Cloud service account instead; see `pro.md`.)
 
 ## 0. One time: build the master template (you)
 
-1. Create a blank Google Sheet named **Pre-order Template**. File ▸ Settings: Locale **Philippines**, Time zone **(GMT+08:00) Manila**.
-2. Extensions ▸ Apps Script. Name the project **Pre-order**.
+The code lives in this repo, `Inggo/GS2Preorder`, which is **private**. It is not a GitHub template repo: owners never touch it, and you push it into each shop's repo yourself (step 5). Its Pages workflow skips private repos, so pushing the starter deploys nothing.
+
+1. Create a blank Google Sheet named **GS2Preorder Template**. File ▸ Settings: Locale **Philippines**, Time zone **(GMT+08:00) Manila**.
+2. Extensions ▸ Apps Script. Name the project **GS2Preorder**.
    - Project Settings (gear) ▸ tick **Show "appsscript.json" manifest file in editor**.
    - Replace `Code.gs` with `apps-script/Code.gs` from this repo, and `appsscript.json` with `apps-script/appsscript.json`. Save.
-3. Back in the sheet, reload. A **Pre-order** menu appears. Run **Pre-order ▸ Set up sheet** and authorize it as yourself (same screens as step 4). It adds all the tabs with sample rows.
+3. Back in the sheet, reload. A **GS2Preorder** menu appears. Run **GS2Preorder ▸ Set up sheet** and authorize it as yourself (same screens as step 4). It adds all the tabs with sample rows.
 4. Share ▸ General access: **Anyone with the link: Viewer**. Copy the link and change the ending `/edit…` to **`/copy`**. That's the link you send owners: it opens "Make a copy", and the copy includes the script.
 
 Re-do step 2 whenever `Code.gs` changes, so new shops get the latest version.
@@ -38,7 +40,7 @@ The owner does this in their copy, using `owner-guide.md` as the reference. You 
 - **TEMPLATES**: replace "(your payment details here)" and "(Pickup or delivery details here.)".
 - They then send you the photos, named by SKU.
 
-You check it by running **Pre-order ▸ Check setup**. It should report the products and "Orders are OPEN". Look for photos whose name doesn't match a SKU, and for SKUs that have no photo.
+You check it by running **GS2Preorder ▸ Check setup**. It should report the products and "Orders are OPEN". Look for photos whose name doesn't match a SKU, and for SKUs that have no photo.
 
 ## 4. Deploy the web app and authorize it: "the API key step"
 
@@ -46,17 +48,17 @@ The owner should do this in their own account, on a call with you sharing their 
 
 In the owner's sheet:
 
-1. **Extensions ▸ Apps Script**. The **Pre-order** project opens; the code is already there.
+1. **Extensions ▸ Apps Script**. The **GS2Preorder** project opens; the code is already there.
 2. **Deploy ▸ New deployment**. Click the gear next to "Select type" and choose **Web app**.
    - Description: `v1`
    - Execute as: **Me (owner@gmail.com)**
    - Who has access: **Anyone** (not "Anyone with Google account"; customers don't sign in)
 3. Click **Deploy**, then **Authorize access**, and pick the owner's account. Google now shows its warning screens. They're expected, because the script is private to this sheet and was never submitted to Google for review:
-   - **"Google hasn't verified this app"**: click **Advanced**, then **Go to Pre-order (unsafe)**. "Unsafe" only means "not reviewed by Google". The developer is the owner's own copy of the script.
-   - **"Pre-order wants to access your Google Account"**: it asks for three permissions. Tell the owner what each one is for:
+   - **"Google hasn't verified this app"**: click **Advanced**, then **Go to GS2Preorder (unsafe)**. "Unsafe" only means "not reviewed by Google". The developer is the owner's own copy of the script.
+   - **"GS2Preorder wants to access your Google Account"**: it asks for three permissions. Tell the owner what each one is for:
      - *See, edit, create and delete only the specific Google Sheets you use this app with*: this one sheet only, not the rest of their Drive.
      - *Send email as you*: only the new-order alert to their Notify Email.
-     - *Display and run third-party web content in prompts and sidebars*: the Pre-order menu and its pop-ups.
+     - *Display and run third-party web content in prompts and sidebars*: the GS2Preorder menu and its pop-ups.
    - Click **Allow**.
 4. Copy the **Web app URL** (`https://script.google.com/macros/s/AKfy…/exec`). That's the "key" the website needs. It isn't secret: anyone can place orders through it, the same as through the website.
 5. Check it: open `<URL>?action=ping` in a browser. You should see `{"status":200,"ok":true,"api":1}`.
@@ -70,20 +72,33 @@ The repo and the site belong to the owner, so the shop keeps working and stays t
 **The owner** does this, on the same call or with screenshots:
 
 1. Sign up at <https://github.com/signup> (free plan) and verify the email address. The username becomes part of the site address: `https://<username>.github.io/<repo>/`.
-2. Open the starter repo link you send them, then click **Use this template ▸ Create a new repository**.
+2. Click **+ ▸ New repository**:
    - Owner: their own account. Repository name: after the shop, e.g. `myshop-preorder`.
    - Visibility: **Public**, which free GitHub Pages requires.
-3. In the new repo, go to **Settings ▸ Pages ▸ Build and deployment ▸ Source: GitHub Actions**. Only the owner can do this, because collaborators can't change a repo's Pages settings. The first workflow run, from the template's initial commit, may already show a red ✗. That's expected, and your first push redeploys.
-4. Go to **Settings ▸ Collaborators ▸ Add people**, enter **`Inggo`**, and click **Add Inggo to this repository**.
+   - Leave it **empty**: no README, no .gitignore, no license. You push the starter into it.
+3. Go to **Settings ▸ Collaborators ▸ Add people**, enter **`Inggo`**, and click **Add Inggo to this repository**.
+4. Go to **Settings ▸ Pages ▸ Build and deployment ▸ Source: GitHub Actions**. Only the owner can do this, because collaborators can't change a repo's Pages settings. If the page doesn't offer it while the repo is still empty, come back to it after your first push.
 
-**You** accept the invitation, from the email or at <https://github.com/notifications>, and then:
+The starter repo (this one) is **private**, so the owner never sees or needs access to it. **You** accept the invitation, from the email or at <https://github.com/notifications>, and push the starter into the owner's repo:
 
-1. Clone it (`gh repo clone <owner>/<repo>`) and edit:
+```bash
+git clone git@github.com:Inggo/GS2Preorder.git myshop-preorder
+cd myshop-preorder
+git remote rename origin starter                        # the starter stays a remote, for updates later
+git remote add origin git@github.com:<owner>/myshop-preorder.git
+git push -u origin main
+```
+
+Because the shop repo shares the starter's history, you can pull starter updates later (see *Updating a shop's site later*). It also means the starter's **whole commit history becomes public** in every shop repo. That's one more reason the starter must never contain shop data, secrets or anything else you wouldn't publish.
+
+Then:
+
+1. Edit:
    - `web/config.js`: paste the Web app URL into `api`.
    - `web/index.html`: the `<title>`, description and `og:` tags, and "My Shop" in `.shop-name` and `.nav-logo`. For a logo, see `customizing.md`.
    - `web/favicon.svg`: optional; swap it for the shop's icon.
 2. Photos: put them in `photos/` named `<SKU>.jpg` (or `.png`, `.webp`, `.heic`), then run `./photos.sh`. It writes small JPEGs to `web/img/` (1000px, about 100–200 KB each, location data stripped). `photos/` is git-ignored, so only the web copies are published.
-3. Commit and push. The **Deploy to GitHub Pages** workflow runs on every push, and the site is at `https://<owner>.github.io/<repo>/`.
+3. Commit and push. The **Deploy to GitHub Pages** workflow runs on every push, and the site is at `https://<owner>.github.io/<repo>/`. If a run failed because Pages wasn't on yet, re-run it once the owner has turned Pages on: `gh workflow run pages.yml`, or Actions ▸ Deploy to GitHub Pages ▸ Run workflow.
    - A custom domain is optional. The owner sets it in Settings ▸ Pages ▸ Custom domain (admin only), plus a CNAME record at their DNS host.
 
 ## 6. Test before going live
@@ -99,6 +114,18 @@ The repo and the site belong to the owner, so the shop keeps working and stays t
 ## 7. Hand over
 
 Send the owner `owner-guide.md` (or a copy of it as a Google Doc) and the site link. Walk them through one order's status changes.
+
+## Updating a shop's site later
+
+To bring starter changes (`web/app.js`, `style.css`, the workflow) into a shop:
+
+```bash
+cd myshop-preorder
+git pull starter main          # merges the starter into the shop's own edits
+git push                       # redeploys the site
+```
+
+Conflicts usually show up only in files the shop customized (`web/index.html`, `web/config.js`). Keep the shop's values. For a shop repo cloned somewhere else, first add the remote: `git remote add starter git@github.com:Inggo/GS2Preorder.git`.
 
 ## Updating a shop's script later
 

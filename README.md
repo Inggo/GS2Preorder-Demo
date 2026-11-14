@@ -1,4 +1,4 @@
-# Pre-order Starter
+# GS2Preorder Starter
 
 A pre-order website for small shops, where a **Google Sheet is the database and the admin screen**. Customers browse the catalog, fill a cart and send a pre-order. The owner gets an email, sees the order as a row in the sheet, and moves it through **Pending → Verified → Paid**. Each status change fills in a ready-to-send message. Stock updates by itself.
 
@@ -29,7 +29,7 @@ docs/
 ## Quick start
 
 1. Build the master template sheet once: [setup.md §0](docs/setup.md#0-one-time-build-the-master-template-you).
-2. For each shop, follow [setup.md](docs/setup.md): the owner copies the template, deploys the web app and authorizes it. The owner then creates their own repo from this template, turns on Pages and adds you as a collaborator. You paste the URL into `web/config.js` and add the photos.
+2. For each shop, follow [setup.md](docs/setup.md): the owner copies the template, deploys the web app and authorizes it. The owner then creates an empty public repo, adds you as a collaborator and turns on Pages. You push this (private) starter into it, paste the URL into `web/config.js` and add the photos.
 
 To preview locally: `python3 -m http.server -d web 8000`. The page loads its data from the web app URL in `config.js`.
 

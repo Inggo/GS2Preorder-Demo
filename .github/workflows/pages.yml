@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    # The private starter repo has no Pages; only the public shop repos deploy.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -1,5 +1,5 @@
 /**
- * Pre-order backend: a web app bound to the shop's Google Sheet.
+ * GS2Preorder backend: a web app bound to the shop's Google Sheet.
  *
  *   GET  ?action=shop    products + storefront settings
  *   GET  ?action=ping    health check
@@ -9,7 +9,7 @@
  * the real status in the body: {"status": 409, "error": "...", ...}.
  * The contract (shared with the Go "pro" server) is in docs/api.md.
  *
- * The sheet menu "Pre-order" adds "Set up sheet" (builds missing tabs) and
+ * The sheet menu "GS2Preorder" adds "Set up sheet" (builds missing tabs) and
  * "Check setup". The tabs are described in docs/sheet.md.
  */
 
@@ -318,7 +318,7 @@ function newOrderId() {
 
 function tab(ss, name) {
   const sheet = ss.getSheetByName(name);
-  if (!sheet) throw new Error(`The ${name} tab is missing. Run Pre-order ▸ Set up sheet.`);
+  if (!sheet) throw new Error(`The ${name} tab is missing. Run GS2Preorder ▸ Set up sheet.`);
   return sheet;
 }
 
@@ -475,7 +475,7 @@ function parseColor(v) {
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu("Pre-order")
+    .createMenu("GS2Preorder")
     .addItem("Check setup", "checkSetup")
     .addItem("Set up sheet (adds missing tabs)", "setupSheet")
     .addToUi();
@@ -496,9 +496,9 @@ function checkSetup() {
       st.closeAt ? `Orders close on ${new Date(st.closeAt).toString()}.` : "No closing date set.",
       st.notifyEmail ? `New-order emails go to ${st.notifyEmail}.` : "No Notify Email set: you won't get new-order emails.",
     ];
-    ui.alert("Pre-order setup looks good", lines.join("\n"), ui.ButtonSet.OK);
+    ui.alert("GS2Preorder setup looks good", lines.join("\n"), ui.ButtonSet.OK);
   } catch (err) {
-    ui.alert("Pre-order setup problem", String(err.message || err), ui.ButtonSet.OK);
+    ui.alert("GS2Preorder setup problem", String(err.message || err), ui.ButtonSet.OK);
   }
 }
 
