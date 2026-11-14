@@ -13,7 +13,7 @@
 
 ## What keeps the upgrade path open
 
-1. **Same sheet, except Messenger.** Lite's ORDERS has a `Messenger` column (F) that the Go server doesn't know yet: it writes ORDERS by position (A–J, with Instagram in F), so it would put data in the wrong columns. Before a lite shop moves to pro, the Go server needs the Messenger column, `contactFields` in settings and the `messenger` order field (see `api.md`). Otherwise the lite tabs and columns are what the Go server reads, so a lite shop moves to pro without migrating data: add a PROMOS tab and share the sheet with the service account. Headers are matched by name, and the Go server ignores settings it doesn't know (`Instagram`, `Messenger`, `Notify Email`).
+1. **Same sheet.** The lite tabs and columns are what the Go server reads, so a lite shop moves to pro without migrating data: add a PROMOS tab and share the sheet with the service account. Headers are matched by name, including ORDERS', so the Go server writes lite's `Messenger` column (F) as well as older sheets without one. It ignores settings it doesn't use (`Notify Email`).
 2. **Same API bodies** (`api.md`). The page talks to the backend only through the `api` object in `web/app.js`, which already supports `backend: "server"`. Switching a shop to pro means changing `web/config.js`, not the page.
 3. **Same frontend.** The page's markup, CSS and order flow are the pro page with features removed, not a rewrite.
 
@@ -22,7 +22,6 @@
 1. **One frontend, feature flags.** Port the promo quote and the photo viewer from the pro `web/app.js` into this repo's `app.js`, switched on by `SHOP_CONFIG.features = { promos: true, viewer: true }` (only valid with `backend: "server"`). Lite keeps them off, so its behavior doesn't change. Then the pro shops move onto this frontend, and both lines share one `web/`.
 2. **Generalize the Go server** (currently in its own repo, tied to one shop) into a tenant-neutral module:
    - Currency, timezone and the mobile-number rule come from env instead of constants (lite has the same three hard-coded in `Code.gs` and `app.js`; see `customizing.md`).
-   - Add `instagram` to `GET api/settings`.
    - Optional: `GET api/shop`, returning products and settings in one call like lite.
    - Optional: CORS (`Access-Control-Allow-Origin` for the tenant's Pages origin), if a pro shop should keep its frontend on GitHub Pages. The simpler default is to serve the frontend from the VPS, as the first shop does, so everything stays same-origin under the strict CSP.
 3. **Repo layout**: either a `server/` directory here (Go module, `deploy/`) or a separate `gs2preorder-server` repo that pulls `web/` from this one. A separate repo keeps lite clones free of Go and VPS scripts.
