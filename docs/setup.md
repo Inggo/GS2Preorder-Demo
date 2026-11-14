@@ -86,7 +86,7 @@ git clone git@github.com:Inggo/GS2Preorder.git myshop-preorder
 cd myshop-preorder
 git remote rename origin starter                        # the starter stays a remote, for updates later
 git remote add origin git@github.com:<owner>/myshop-preorder.git
-git push -u origin main
+git push -u origin master
 ```
 
 Because the shop repo shares the starter's history, you can pull starter updates later (see *Updating a shop's site later*). It also means the starter's **whole commit history becomes public** in every shop repo. That's one more reason the starter must never contain shop data, secrets or anything else you wouldn't publish.
@@ -122,7 +122,7 @@ To bring starter changes (`web/app.js`, `style.css`, the workflow) into a shop:
 
 ```bash
 cd myshop-preorder
-git pull starter main          # merges the starter into the shop's own edits
+git pull starter master          # merges the starter into the shop's own edits
 git push                       # redeploys the site
 ```
 
