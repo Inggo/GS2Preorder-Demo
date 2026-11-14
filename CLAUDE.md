@@ -9,7 +9,7 @@ The **lite** edition of a Google-Sheets-backed pre-order site, kept private and 
 - `web/`: static frontend for GitHub Pages (plain HTML/CSS/vanilla JS, no build). `config.js` holds the backend URL.
 - `apps-script/`: the backend. It's a container-bound Apps Script web app pasted into each shop's sheet, and runs as the owner.
 - `photos.sh`: ImageMagick resize of pre-watermarked photos into `web/img/<SKU>.jpg` plus `web/img/index.json`.
-- `docs/`: `setup.md` (operator runbook), `owner-guide.md`, `sheet.md` (schema), `api.md` (contract), `customizing.md`, `pro.md`.
+- `docs/`: `setup.md` (operator runbook), `owner-onboarding.md` (the owner's setup steps; keep it in sync with `setup.md`), `owner-guide.md`, `sheet.md` (schema), `api.md` (contract), `customizing.md`, `pro.md`.
 
 It is derived from the first production build (the Go server repo), which is the future **pro** edition (Go server). Lite leaves out promos (`api/quote`), the photo viewer, watermarking, ntfy and per-IP limits.
 

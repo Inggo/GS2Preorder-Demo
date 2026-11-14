@@ -19,6 +19,8 @@ Re-do step 2 whenever `Code.gs` changes, so new shops get the latest version.
 
 ## 1. Collect from the owner
 
+Send the owner `owner-onboarding.md` (or a copy of it as a Google Doc), together with the sheet's `/copy` link and your email. It walks them through their side of steps 1–5. The sections below are your side of the same steps.
+
 - Shop name, one-line tagline, Instagram username, logo (PNG, transparent if possible) and brand color.
 - Product photos, **already watermarked**, one per product, named by the SKUs they enter in INVENTORY (step 3). They're the only content that comes to you, because `photos.sh` runs in the shop's repo.
 

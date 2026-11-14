@@ -19,6 +19,7 @@ apps-script/          the backend: Code.gs + appsscript.json, pasted into the sh
 photos.sh             resizes the owner's photos/<SKU>.jpg into web/img/ (needs ImageMagick)
 docs/
   setup.md            onboarding runbook for the operator, incl. the Google authorization step
+  owner-onboarding.md for the shop owner: their setup steps (copy the sheet, fill it, authorize, GitHub)
   owner-guide.md      for the shop owner: running the shop from the sheet
   sheet.md            the tabs, columns and formula rules
   api.md              the backend contract shared with the pro (Go) server
