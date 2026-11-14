@@ -19,10 +19,8 @@ Re-do step 2 whenever `Code.gs` changes, so new shops get the latest version.
 
 ## 1. Collect from the owner
 
-Send the owner `owner-onboarding.md` (or a copy of it as a Google Doc), together with the sheet's `/copy` link and your email. It walks them through their side of steps 1–5. The sections below are your side of the same steps.
-
-- Shop name, one-line tagline, Instagram username, logo (PNG, transparent if possible) and brand color.
-- Product photos, **already watermarked**, one per product, named by the SKUs they enter in INVENTORY (step 3). They're the only content that comes to you, because `photos.sh` runs in the shop's repo.
+- Shop name, logo (PNG, transparent if possible) and brand color: these go into `web/index.html`. The tagline and the Instagram and Messenger usernames the owner types into SETTINGS.
+- Product photos, one per product (watermarking is optional and up to the owner; lite doesn't add one), named by the SKUs they enter in INVENTORY (step 3). They're the only content that comes to you, because `photos.sh` runs in the shop's repo.
 
 Everything else the owner types straight into their sheet: the product list, payment and pickup text, closing date and alert email.
 
@@ -46,7 +44,7 @@ You check it by running **GS2Preorder ▸ Check setup**. It should report the pr
 
 ## 4. Deploy the web app and authorize it: "the API key step"
 
-The owner should do this in their own account, on a call with you sharing their screen, because the web app runs as whoever deploys it. That person's account reads and writes the sheet and sends the alert emails. If you deploy it yourself, everything runs as you, and the shop breaks if your access is ever removed.
+The owner does this in their own account, because the web app runs as whoever deploys it. That person's account reads and writes the sheet and sends the alert emails. If you deploy it yourself, everything runs as you, and the shop breaks if your access is ever removed.
 
 In the owner's sheet:
 
@@ -71,7 +69,7 @@ Owners can see and revoke access anytime at <https://myaccount.google.com/permis
 
 The repo and the site belong to the owner, so the shop keeps working and stays theirs even if you stop maintaining it. You work on it as a collaborator.
 
-**The owner** does this, on the same call or with screenshots:
+**The owner** does this:
 
 1. Sign up at <https://github.com/signup> (free plan) and verify the email address. The username becomes part of the site address: `https://<username>.github.io/<repo>/`.
 2. Click **+ ▸ New repository**:

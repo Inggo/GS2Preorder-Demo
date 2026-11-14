@@ -36,4 +36,4 @@ To preview locally: `python3 -m http.server -d web 8000`. The page loads its dat
 
 ## What lite leaves out
 
-Lite has no promos or bundle pricing, no watermarking (owners send watermarked photos) and no full-size photo viewer. Those are in the **pro** edition, a Go server on a VPS that uses the same sheet and the same page. See [docs/pro.md](docs/pro.md).
+Lite has no promos or bundle pricing, no watermarking (owners add their own if they want one) and no full-size photo viewer. Those are in the **pro** edition, a Go server on a VPS that uses the same sheet and the same page. See [docs/pro.md](docs/pro.md).

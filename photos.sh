@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Resizes the owner's (already watermarked) photos for the web.
+# Resizes the owner's photos for the web (lite adds no watermark; any is the owner's own).
 #
 #   photos/<SKU>.jpg|jpeg|png|webp|heic  →  web/img/<SKU>.jpg  (+ web/img/index.json)
 #
