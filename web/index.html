@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Shop pre-orders</title>
+  <meta name="description" content="Pre-order from My Shop.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="My Shop">
+  <meta property="og:title" content="My Shop pre-orders">
+  <meta property="og:description" content="Pre-order from My Shop.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Young+Serif&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <nav class="tapes" aria-label="Product categories">
+    <div class="tapes-row">
+      <a class="nav-logo" href="#" aria-label="Back to top">My Shop</a>
+      <div class="tapes-list">
+        <ul></ul>
+        <select class="section-picker" aria-label="Jump to a category"></select>
+      </div>
+      <button type="button" class="nav-cart" aria-haspopup="dialog" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11h20"/><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m9 11 1 9"/><path d="m15 11-1 9"/></svg>
+        <span class="nav-cart-count"></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="masthead">
+    <h1 class="shop-name">My Shop</h1>
+    <p class="subheading" hidden></p>
+    <p class="closed-note" role="status" hidden></p>
+    <ul class="notes" hidden></ul>
+    <p class="handle" hidden><a target="_blank" rel="noopener"></a> on Instagram</p>
+  </header>
+
+  <main id="shop" aria-busy="true">
+    <p class="status">Loading products…</p>
+  </main>
+
+  <div class="cartbar" hidden>
+    <div class="cartbar-float">
+      <button type="button" class="cartbar-button" aria-haspopup="dialog">
+        <span class="cartbar-info">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11h20"/><path d="m5 11 4-7"/><path d="m19 11-4-7"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m9 11 1 9"/><path d="m15 11-1 9"/></svg>
+          <span class="cartbar-summary" aria-live="polite"></span>
+        </span>
+        <span class="cartbar-action">Review pre-order</span>
+      </button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>Designed &amp; Developed by <a href="https://inggo.dev" target="_blank" rel="noopener">Inggo</a></p>
+  </footer>
+
+  <dialog class="sheet" id="order" aria-labelledby="order-title">
+    <div class="sheet-view" data-view="form">
+      <div class="sheet-head">
+        <h2 id="order-title">Your pre-order</h2>
+        <button type="button" class="close" data-close aria-label="Close">×</button>
+      </div>
+      <div class="lines"></div>
+      <p class="total"><span>Estimated total</span> <strong class="total-amount"></strong></p>
+
+      <h3 class="form-title">Your Information</h3>
+      <p class="form-note" hidden></p>
+
+      <form id="order-form" novalidate>
+        <label class="field">
+          <span>Name</span>
+          <input name="name" autocomplete="name" maxlength="100" required>
+          <span class="field-error" data-error="name"></span>
+        </label>
+
+        <fieldset class="field">
+          <legend>How should we reach you?</legend>
+          <div class="choice">
+            <label><input type="radio" name="contactVia" value="Email" checked> <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</label>
+            <label><input type="radio" name="contactVia" value="Instagram"> <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg> Instagram</label>
+          </div>
+          <span class="field-error" data-error="contactVia"></span>
+        </fieldset>
+
+        <label class="field" data-contact="Email">
+          <span>Email address</span>
+          <input name="email" type="email" autocomplete="email" maxlength="254">
+          <span class="field-error" data-error="email"></span>
+        </label>
+
+        <label class="field" data-contact="Instagram" hidden>
+          <span>Instagram username</span>
+          <span class="prefixed"><span aria-hidden="true">@</span><input name="instagram" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="31"></span>
+          <span class="field-error" data-error="instagram"></span>
+        </label>
+
+        <label class="field">
+          <span>Mobile number</span>
+          <input name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="0917 123 4567" required>
+          <span class="field-error" data-error="mobile"></span>
+        </label>
+
+        <div class="trap" aria-hidden="true">
+          <label>Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <p class="form-error" role="alert"></p>
+        <button type="submit" class="primary">
+          <span class="button-label">Submit pre-order</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.497.497 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+        </button>
+        <p class="fineprint">We'll message you within one to two days with your exact total and how to pay.</p>
+      </form>
+    </div>
+
+    <div class="sheet-view" data-view="done" hidden>
+      <div class="sheet-head">
+        <h2>Pre-order sent</h2>
+        <button type="button" class="close" data-close aria-label="Close">×</button>
+      </div>
+      <p>Your order number is</p>
+      <p class="order-id"></p>
+      <p class="done-note"></p>
+      <button type="button" class="primary" data-close>Done</button>
+    </div>
+  </dialog>
+
+  <template id="product-card">
+    <li class="product">
+      <div class="photo">
+        <img loading="lazy" decoding="async" alt="">
+      </div>
+      <h3 class="product-name"><span class="name"></span> <span class="badge-new" hidden>New</span></h3>
+      <p class="product-desc" hidden></p>
+      <p class="product-meta"><span class="price"></span> <span class="stock"></span></p>
+      <div class="qty-slot"></div>
+    </li>
+  </template>
+
+  <template id="stepper">
+    <div class="stepper">
+      <button type="button" class="step" data-step="-1">−</button>
+      <output class="count"></output>
+      <button type="button" class="step" data-step="1">+</button>
+    </div>
+  </template>
+
+  <template id="cart-line">
+    <li class="line">
+      <div class="line-photo">
+        <img decoding="async" alt="">
+      </div>
+      <div class="line-text">
+        <span class="line-name"></span>
+        <span class="line-sub"></span>
+      </div>
+      <div class="line-qty"></div>
+      <span class="line-total"></span>
+    </li>
+  </template>
+</body>
+</html>

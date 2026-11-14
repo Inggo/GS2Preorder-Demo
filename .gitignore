@@ -1,0 +1,5 @@
+# The owner's source photos: only the resized copies in web/img/ are committed.
+photos/
+# clasp settings point at one tenant's script.
+.clasp.json
+.DS_Store
