@@ -13,7 +13,7 @@
 
 ## What keeps the upgrade path open
 
-1. **Same sheet, except Messenger.** Lite's ORDERS has a `Messenger` column (F) that the Go server doesn't know yet: it writes ORDERS by position (A–J, with Instagram in F), so it would put data in the wrong columns. Before a lite shop moves to pro, the Go server needs the Messenger column, `contactFields` in settings and the `messenger` order field (see `api.md`). Otherwise the lite tabs and columns are what the Go server reads, so a lite shop moves to pro without migrating data: add a PROMOS tab and share the sheet with the service account. Headers are matched by name, and the Go server ignores settings it doesn't know (`Instagram`, `Notify Email`).
+1. **Same sheet, except Messenger.** Lite's ORDERS has a `Messenger` column (F) that the Go server doesn't know yet: it writes ORDERS by position (A–J, with Instagram in F), so it would put data in the wrong columns. Before a lite shop moves to pro, the Go server needs the Messenger column, `contactFields` in settings and the `messenger` order field (see `api.md`). Otherwise the lite tabs and columns are what the Go server reads, so a lite shop moves to pro without migrating data: add a PROMOS tab and share the sheet with the service account. Headers are matched by name, and the Go server ignores settings it doesn't know (`Instagram`, `Messenger`, `Notify Email`).
 2. **Same API bodies** (`api.md`). The page talks to the backend only through the `api` object in `web/app.js`, which already supports `backend: "server"`. Switching a shop to pro means changing `web/config.js`, not the page.
 3. **Same frontend.** The page's markup, CSS and order flow are the pro page with features removed, not a rewrite.
 

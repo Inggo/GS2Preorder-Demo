@@ -47,6 +47,7 @@ One row per status. These words get replaced automatically:
 ## Website text and closing (SETTINGS)
 
 - **Subheading** and **Note** rows are the text at the top of the site. Add more Note rows for more bullet points. Put `**two stars**` around words for **bold**, and `__two underscores__` for underlined.
+- **Instagram** and **Messenger**: your usernames, shown as links under the notes. Leave one blank to hide it. They appear in the same order as their rows, so move the rows to swap them.
 - **Contact Fields**: how customers can ask you to reach them: Email, Messenger and Instagram, one row each. Delete a row to stop offering that option, and reorder the rows to change their order on the form. Keep at least one row (with none, all three come back).
 - **Orders Open**: untick it to close the shop right away.
 - **Close At**: the shop closes by itself at this date and time.

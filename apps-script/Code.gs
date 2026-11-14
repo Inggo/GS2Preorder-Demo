@@ -396,7 +396,8 @@ function publicProduct(p) {
 
 /** SETTINGS: "Setting | Value" rows; names match case-insensitively, blanks are ignored. */
 function readSettings(ss) {
-  const st = { notes: [], contactFields: [] };
+  const st = { notes: [], contactFields: [], handles: [] };
+  const handle = (kind) => { if (!st.handles.includes(kind)) st.handles.push(kind); };
   const sheet = ss.getSheetByName(TAB.settings);
   if (!sheet) return st;
   const tz = ss.getSpreadsheetTimeZone();
@@ -420,7 +421,18 @@ function readSettings(ss) {
       }
       case "instagram": {
         const ig = text.replace(/^@/, "");
-        if (INSTAGRAM_RE.test(ig)) st.instagram = ig;
+        if (INSTAGRAM_RE.test(ig)) {
+          st.instagram = ig;
+          handle("Instagram");
+        }
+        break;
+      }
+      case "messenger": {
+        const fb = parseMessenger(text);
+        if (fb) {
+          st.messenger = fb;
+          handle("Messenger");
+        }
         break;
       }
       case "orders open": {
@@ -458,6 +470,8 @@ function publicSettings(st, now) {
     formNote: st.formNote || "",
     orderNote: st.orderNote || "",
     instagram: st.instagram || "",
+    messenger: st.messenger || "",
+    handles: st.handles || [],
     contactFields: contactMethods(st),
     themeColor: st.themeColor || "",
     accentColor: st.accentColor || "",
@@ -673,7 +687,9 @@ function buildSettings(sheet) {
     ["Subheading", "Pre-order now, pick up at the event", "The line under the logo."],
     ["Note", "Pre-order closes on (date).", "One item of the list under the subheading. Add more Note rows for more items. **bold** and __underline__ work."],
     ["Note", "We'll message you to confirm your order and how to pay.", ""],
-    ["Instagram", "", "Your Instagram username, linked under the notes."],
+    ["Instagram", "", "Your Instagram username, linked under the notes. Blank: not shown."],
+    ["Messenger", "", "Your Messenger/Facebook username (or page/profile link), linked under the notes. Blank: not shown. " +
+      "Instagram and Messenger appear in the same order as these rows."],
     ["Form Note", "", "Text above the customer's details in the order form."],
     ...CONTACT_METHODS.map((m, i) => ["Contact Fields", m, i === 0
       ? "One row per way customers can ask to be reached (pick from the dropdown). Delete a row to turn that option off; " +

@@ -42,7 +42,8 @@ The sheet is the whole database and the owner's admin screen. **GS2Preorder ▸ 
 |---|---|
 | Subheading | Line under the shop name |
 | Note | One bullet under the subheading; repeat the row for more |
-| Instagram | Username, shown as a link |
+| Instagram | Username, shown as a link under the notes |
+| Messenger | Facebook username/ID or a facebook.com / m.me link, shown as a link under the notes (m.me/<username>). Instagram and Messenger show in the order of their rows |
 | Contact Fields | One row per contact option the form offers: `Email`, `Messenger` or `Instagram` (dropdown). Delete a row to turn that option off; row order is the form's order. With no such rows, all three are offered. With one, the form doesn't ask. |
 | Form Note | Text above the order form fields |
 | Order Note | Small text under the order button |

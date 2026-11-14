@@ -425,6 +425,32 @@ function openOrder() {
   orderDialog.showModal();
 }
 
+// The shop's own links under the notes: [href, text] for a SETTINGS value.
+const HANDLE_LINK = {
+  Instagram: (v) => [`https://www.instagram.com/${encodeURIComponent(v)}/`, "@" + v],
+  Messenger: (v) => (/^https:\/\//.test(v) ? [v, "Message us"] : [`https://m.me/${encodeURIComponent(v)}`, v]),
+};
+
+/** Shows the filled-in handles in SETTINGS row order (pro sends no `handles`: Instagram only). */
+function applyHandles(data) {
+  const box = $(".handles");
+  const order = Array.isArray(data.handles) ? data.handles : ["Instagram"];
+  const els = $$(".handle", box);
+  for (const el of els) el.hidden = true;
+  for (const kind of order) {
+    const el = els.find((x) => x.dataset.handle === kind);
+    const value = data[kind.toLowerCase()];
+    if (!el || !value || !HANDLE_LINK[kind]) continue;
+    const [href, text] = HANDLE_LINK[kind](value);
+    const a = $("a", el);
+    a.href = href;
+    a.textContent = text;
+    el.hidden = false;
+    box.append(el);
+  }
+  box.hidden = els.every((el) => el.hidden);
+}
+
 // The pro (Go) server doesn't send contactFields; it takes Email and Instagram.
 const DEFAULT_CONTACTS = ["Email", "Instagram"];
 const CONTACT_PHRASE = { Email: "email you", Messenger: "message you on Messenger", Instagram: "message you on Instagram" };
@@ -629,13 +655,7 @@ function applySettings(data) {
     notes.append(li);
   }
   notes.hidden = !notes.children.length;
-  const handle = $(".handle");
-  if (data.instagram) {
-    const a = $("a", handle);
-    a.href = `https://www.instagram.com/${encodeURIComponent(data.instagram)}/`;
-    a.textContent = "@" + data.instagram;
-  }
-  handle.hidden = !data.instagram;
+  applyHandles(data);
   applyContactFields(data.contactFields);
   setRich($(".form-note", orderDialog), data.formNote);
   if (data.orderNote) setRich($(".fineprint", orderDialog), data.orderNote);

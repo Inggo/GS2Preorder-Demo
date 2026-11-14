@@ -147,7 +147,8 @@ body.closed .closed-note { margin-top: 1.75rem; font-size: 1.1rem; }
 .notes strong { font-weight: 700; }
 u { text-underline-offset: 0.18em; }
 
-.handle { margin: 1.25rem 0 0; color: var(--ink-soft); }
+.handles { margin: 1.25rem 0 0; display: grid; gap: 0.25rem; }
+.handle { margin: 0; color: var(--ink-soft); }
 
 .tapes {
   position: fixed;

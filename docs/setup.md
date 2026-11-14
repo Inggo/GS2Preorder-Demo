@@ -36,7 +36,7 @@ Send the owner the `/copy` link. They click **Make a copy**, keep the name or re
 The owner does this in their copy, using `owner-guide.md` as the reference. You only review it.
 
 - **INVENTORY**: delete the sample rows and add one row per product: SKU (their own code, e.g. `stickers-001`; it names the photo file), category, name, short description, price and stock. Leave the grey columns alone.
-- **SETTINGS**: Subheading, Notes, Instagram, Contact Fields (delete the rows for contact options the shop doesn't want), Close At, Notify Email, and colors (optional).
+- **SETTINGS**: Subheading, Notes, Instagram, Messenger, Contact Fields (delete the rows for contact options the shop doesn't want), Close At, Notify Email, and colors (optional).
 - **TEMPLATES**: replace "(your payment details here)" and "(Pickup or delivery details here.)".
 - They then send you the photos, named by SKU.
 
