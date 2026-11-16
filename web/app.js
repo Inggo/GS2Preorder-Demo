@@ -36,6 +36,7 @@ const orderDialog = $("#order");
 const form = $("#order-form");
 const finder = $(".finder");
 const finderInput = $("input", finder);
+const finderClear = $(".finder-clear", finder);
 let searchTimer = 0;
 
 async function request(url, init) {
@@ -282,7 +283,7 @@ function renderNav(groups) {
 function renderShop() {
   state.groups = catalogGroups();
   renderNav(state.groups);
-  finder.hidden = $(".nav-search", nav).hidden = !state.products.length;
+  finder.hidden = !state.products.length;
   if (state.query) {
     showResults();
   } else {
@@ -428,17 +429,79 @@ function searchFields(p) {
   return fields;
 }
 
+function typoLimit(token) {
+  return token.length >= 8 ? 2 : token.length >= 4 ? 1 : 0;
+}
+
+function wordTypos(token, word, max) {
+  return Math.min(typos(token, word, max), typos(token, word.slice(0, token.length), max));
+}
+
 function tokenScore(token, field) {
   if (field.words.some((w) => w.startsWith(token))) return field.words.includes(token) ? 1.2 : 1;
   if (token.length > 1 && field.text.includes(token)) return 0.7;
-  const max = token.length >= 8 ? 2 : token.length >= 4 ? 1 : 0;
+  const max = typoLimit(token);
   if (!max) return 0;
   let best = max + 1;
   for (const w of field.words) {
-    best = Math.min(best, typos(token, w, max), typos(token, w.slice(0, token.length), max));
+    best = Math.min(best, wordTypos(token, w, max));
     if (best === 1) break;
   }
   return best <= max ? 0.6 - 0.15 * (best - 1) : 0;
+}
+
+function matchRanges(text, tokens) {
+  let folded = "";
+  const from = [];
+  let at = 0;
+  for (const ch of text) {
+    const f = fold(ch);
+    for (let k = 0; k < f.length; k++) from.push(at);
+    folded += f;
+    at += ch.length;
+  }
+  from.push(text.length);
+  const ranges = [];
+  for (const m of folded.matchAll(/[\p{L}\p{N}]+/gu)) {
+    const w = m[0];
+    for (const t of tokens) {
+      let start = -1;
+      let len = t.length;
+      if (w.startsWith(t)) start = 0;
+      else if (t.length > 1 && w.includes(t)) start = w.indexOf(t);
+      else if (typoLimit(t) && wordTypos(t, w, typoLimit(t)) <= typoLimit(t)) [start, len] = [0, w.length];
+      if (start >= 0) ranges.push([from[m.index + start], from[m.index + start + len]]);
+    }
+  }
+  ranges.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const r of ranges) {
+    const last = merged[merged.length - 1];
+    if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]);
+    else merged.push(r);
+  }
+  return merged;
+}
+
+function markMatches(el, tokens) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const ranges = matchRanges(node.data, tokens);
+    if (!ranges.length) continue;
+    const parts = [];
+    let at = 0;
+    for (const [start, end] of ranges) {
+      if (start > at) parts.push(node.data.slice(at, start));
+      const mark = document.createElement("mark");
+      mark.textContent = node.data.slice(start, end);
+      parts.push(mark);
+      at = end;
+    }
+    if (at < node.data.length) parts.push(node.data.slice(at));
+    node.replaceWith(...parts);
+  }
 }
 
 function search(query) {
@@ -486,11 +549,25 @@ function applySearch() {
   } else {
     showResults();
   }
+  if (shop.getBoundingClientRect().top < 0) shop.scrollIntoView({ behavior: "instant" });
 }
 
 function clearSearch() {
   finderInput.value = "";
+  finderClear.hidden = true;
   applySearch();
+}
+
+function openFinder() {
+  nav.classList.add("finding");
+  $(".finder-open", finder).setAttribute("aria-expanded", "true");
+  finderInput.focus();
+}
+
+function closeFinder() {
+  nav.classList.remove("finding");
+  $(".finder-open", finder).setAttribute("aria-expanded", "false");
+  if (finderInput.value) clearSearch();
 }
 
 function productCard(p, showCategory = false) {
@@ -513,6 +590,11 @@ function productCard(p, showCategory = false) {
 
   $(".product-name .name", el).textContent = p.name;
   fillSubline($(".product-desc", el), showCategory ? p.category : "", p.description);
+  if (state.query) {
+    const tokens = words(state.query);
+    markMatches($(".product-name .name", el), tokens);
+    markMatches($(".product-desc", el), tokens);
+  }
   $(".price", el).textContent = peso(p.price);
   fillProduct(el, p);
   emit("card", el, p);
@@ -1031,6 +1113,7 @@ $("ul", nav).addEventListener("click", (e) => {
 });
 
 finderInput.addEventListener("input", () => {
+  finderClear.hidden = !finderInput.value;
   clearTimeout(searchTimer);
   searchTimer = setTimeout(applySearch, SEARCH_DELAY);
 });
@@ -1038,16 +1121,30 @@ finderInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     applySearch();
     finderInput.blur();
-  } else if (e.key === "Escape" && finderInput.value) {
+  } else if (e.key === "Escape" && (finderInput.value || nav.classList.contains("finding"))) {
     e.preventDefault();
-    clearSearch();
+    if (nav.classList.contains("finding")) {
+      closeFinder();
+      $(".finder-open", finder).focus();
+    } else {
+      clearSearch();
+    }
   }
 });
 finderInput.addEventListener("search", applySearch);
-
-$(".nav-search").addEventListener("click", () => {
-  finderInput.focus({ preventScroll: true });
-  finder.scrollIntoView({ block: "start" });
+finderInput.addEventListener("blur", () => {
+  if (!finderInput.value) setTimeout(() => {
+    if (!finder.contains(document.activeElement)) closeFinder();
+  }, 0);
+});
+$(".finder-open", finder).addEventListener("click", openFinder);
+finderClear.addEventListener("click", () => {
+  clearSearch();
+  finderInput.focus();
+});
+$(".finder-close", finder).addEventListener("click", () => {
+  closeFinder();
+  $(".finder-open", finder).focus();
 });
 
 $(".cartbar-button").addEventListener("click", openOrder);

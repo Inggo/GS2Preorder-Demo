@@ -42,7 +42,11 @@ Front end only, over name, category and description (weights 3, 2, 1). Text is f
 - a substring anywhere (2+ letters), else
 - a typo match against a word or the word's prefix of the same length (so a half-typed word with a typo still matches): 1 typo from 4 letters, 2 from 8, counting a swap of two neighbours as one (`typos` is an optimal string alignment distance that gives up past the limit).
 
-Results are sorted by score, then catalog order, and shown as one "Search results" section through the same feed, with categories shown on the cards; the New duplicates aren't repeated. Input is debounced by `SEARCH_DELAY`; Enter searches now and closes the keyboard, Escape clears. `.finder-status` (visually hidden, `aria-live`) announces the count. The query survives `loadShop` (after an order the results are re-run). `.nav-search` appears in the nav once the masthead has scrolled away and brings the search field back into view.
+Results are sorted by score, then catalog order, and shown as one "Search results" section through the same feed, with categories shown on the cards; the New duplicates aren't repeated. The query's words are highlighted on each result card with `<mark>` (`markMatches`/`matchRanges`, the same rules per word; a typo match marks the whole word). `matchRanges` maps positions in the folded text back to the original, so accented letters are marked whole.
+
+Input is debounced by `SEARCH_DELAY`; Enter searches now and closes the keyboard, Escape clears. `.finder-clear` (the × inside the field) shows while there's text and clears the search, keeping the field open and focused. When the query changes and the catalog's top is above the screen, the page jumps to it. `.finder-status` (visually hidden, `aria-live`) announces the count. The query survives `loadShop` (after an order the results are re-run).
+
+The field lives in the nav's `.nav-tools`, before the cart button. Below 52rem only the magnifier (`.finder-open`) shows; `openFinder` adds `.finding` to the nav, which hides the logo and categories and gives the field the row, and `closeFinder` (Cancel, Escape, or leaving an empty field) clears the search and closes it.
 
 ## watchNavHeight
 
