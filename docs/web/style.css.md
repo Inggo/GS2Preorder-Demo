@@ -24,6 +24,10 @@ app.js sets `<html data-theme>` (and `web/theme.js` sets it early from the last 
 
 `.discounts` is the list of discount lines above the order sheet's total, filled only when an extension prices the cart (see [hooks.md](../hooks.md#pricing)); lite never shows it. `.pending` dims totals while a price is being worked out.
 
+## Search
+
+`.finder` is the search field between the masthead and the catalog, hidden until products load and when the shop is closed. `.nav-search` is the magnifier in the nav, shown only with `.tapes.scrolled`; it sits close to the cart button when that's showing (`:has(+ .nav-cart:not([hidden]))`). The input is at least 16px so iOS doesn't zoom on focus.
+
 ## Default theme sections
 
 - **Masthead**: left-aligned; the shop name is the one loud thing.

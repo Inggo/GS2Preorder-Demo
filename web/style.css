@@ -122,6 +122,7 @@ body.closed .subheading,
 body.closed .notes,
 body.closed .tapes,
 body.closed #shop,
+body.closed .finder,
 body.closed .cartbar { display: none !important; }
 body.closed .closed-note { margin-top: 1.75rem; font-size: 1.1rem; }
 
@@ -201,6 +202,25 @@ u { text-underline-offset: 0.18em; }
   cursor: pointer;
 }
 .nav-cart svg { width: 1.15rem; height: 1.15rem; }
+
+.nav-search {
+  flex: none;
+  display: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-right: var(--gutter);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.nav-search:has(+ .nav-cart:not([hidden])) { margin-right: 0.35rem; }
+.tapes.scrolled .nav-search { display: inline-grid; }
+.nav-search:hover { background: var(--rule); }
+.nav-search svg { width: 1.2rem; height: 1.2rem; }
 
 .nav-logo {
   flex: none;
@@ -292,6 +312,51 @@ u { text-underline-offset: 0.18em; }
   text-underline-offset: 0.25em;
 }
 .tape:focus-visible { outline-offset: -2px; }
+
+.finder {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0.5rem var(--gutter) 0;
+}
+.finder-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 30rem;
+  min-height: 2.9rem;
+  margin: 0 auto;
+  padding: 0 0.6rem 0 1rem;
+  border: 1.5px solid var(--field);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+.finder-field:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 0; }
+.finder-field svg { flex: none; width: 1.15rem; height: 1.15rem; }
+.finder-field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: max(16px, 1rem);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.finder-field input:focus-visible { outline: none; }
+.finder-field input::placeholder { color: var(--ink-soft); opacity: 1; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 main {
   max-width: var(--measure);
@@ -762,6 +827,9 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
   left: 0; top: 0.72em; width: 0.5rem; height: 2px; border-radius: 0; background: var(--ink-soft);
 }
 :is([data-theme="default"], [data-theme="dark"]) .handles { margin-top: 1rem; }
+:is([data-theme="default"], [data-theme="dark"]) .finder-field { margin: 0; border-radius: var(--radius); }
+:is([data-theme="default"], [data-theme="dark"]) .nav-search { border-radius: var(--radius); }
+:is([data-theme="default"], [data-theme="dark"]) .nav-search:hover { background: var(--tile); }
 
 @media (min-width: 52rem) {
   :is([data-theme="default"], [data-theme="dark"]) .masthead {
