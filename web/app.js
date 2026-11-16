@@ -3,13 +3,14 @@
 const CONFIG = window.SHOP_CONFIG || {};
 const SERVER = CONFIG.backend === "server";
 const API = CONFIG.api || (SERVER ? "api/" : "");
-const CONFIGURED = SERVER || /^https:\/\/script\.google\.com\//.test(API);
+const CONFIGURED = SERVER || API.startsWith("https://script.google.com/");
 
 const MAX_PER_ITEM = 99;
 const CART_KEY = "cart-v1:" + location.pathname;
 const TAPE_TINTS = 6;
-const THEMES = ["default", "art-crafts", "dark"]; // the first is used when settings name none; theme.js lists them too
-const THEME_KEY = "theme-v1:" + location.pathname; // read early by theme.js
+const PRICING_DELAY = 150;
+const THEMES = ["default", "art-crafts", "dark"];
+const THEME_KEY = "theme-v1:" + location.pathname;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -133,6 +134,10 @@ function setQty(sku, qty) {
   }
 }
 
+function cartItems() {
+  return [...state.cart].map(([sku, quantity]) => ({ sku, quantity }));
+}
+
 function cartTotals() {
   let items = 0;
   let total = 0;
@@ -143,10 +148,73 @@ function cartTotals() {
   return { items, total };
 }
 
+const pricing = { fn: null, timer: 0, abort: null, quote: null, busy: false };
+
+function cartKey() {
+  return JSON.stringify([...state.cart].sort());
+}
+
+function freshQuote() {
+  return pricing.quote && pricing.quote.key === cartKey() ? pricing.quote : null;
+}
+
+function requestPricing() {
+  if (!pricing.fn) return;
+  clearTimeout(pricing.timer);
+  pricing.abort?.abort();
+  pricing.busy = state.cart.size > 0 && !freshQuote();
+  if (!pricing.busy) return;
+  pricing.timer = setTimeout(async () => {
+    const key = cartKey();
+    const abort = new AbortController();
+    pricing.abort = abort;
+    let quote = null;
+    try {
+      const q = await pricing.fn(cartItems(), abort.signal);
+      if (q && Number.isFinite(q.total)) {
+        const discounts = (Array.isArray(q.discounts) ? q.discounts : [])
+          .filter((d) => d && typeof d.label === "string" && Number.isFinite(d.amount));
+        quote = { key, total: q.total, discounts };
+      }
+    } catch (err) {
+      if (abort.signal.aborted) return;
+      console.error("pricing failed; showing regular prices", err);
+    }
+    if (abort.signal.aborted) return;
+    pricing.quote = quote;
+    pricing.busy = false;
+    renderTotals();
+  }, PRICING_DELAY);
+}
+
 function renderTotals() {
-  const { items, total } = cartTotals();
-  $(".cartbar-summary", cartbar).textContent = `${plural(items, "item", "items")}, ${peso(total)}`;
-  $(".total-amount", orderDialog).textContent = peso(total);
+  const { items, total: subtotal } = cartTotals();
+  const quote = freshQuote();
+  const pending = pricing.busy && !quote;
+  const summary = $(".cartbar-summary", cartbar);
+  const amount = $(".total-amount", orderDialog);
+  const list = $(".discounts", orderDialog);
+  for (const el of [summary, amount, list]) el.classList.toggle("pending", pending);
+  if (pending) {
+    summary.textContent = summary.textContent.replace(/^[^,]*/, plural(items, "item", "items"));
+    return;
+  }
+
+  const total = quote ? quote.total : subtotal;
+  summary.textContent = `${plural(items, "item", "items")}, ${peso(total)}`;
+  amount.textContent = peso(total);
+  list.replaceChildren();
+  for (const d of quote?.discounts || []) {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = d.label;
+    const off = document.createElement("span");
+    off.className = "discount-amount";
+    off.textContent = `−${peso(d.amount)}`;
+    li.append(label, off);
+    list.append(li);
+  }
+  list.hidden = !list.children.length;
 }
 
 function stepper(sku, qty, limit, label) {
@@ -165,13 +233,14 @@ function stepper(sku, qty, limit, label) {
 function renderShop() {
   const groups = [];
   const fresh = state.products.filter((p) => p.new);
-  if (fresh.length) groups.push({ id: "new", name: "New", products: fresh, tint: "var(--tape-new)" });
+  if (fresh.length) groups.push({ id: "new", key: "new", name: "New", products: fresh, tint: "var(--tape-new)" });
   const categories = new Map();
   state.tints.clear();
   for (const p of state.products) {
     if (!categories.has(p.category)) {
       const tint = `var(--tape-${(categories.size % TAPE_TINTS) + 1})`;
-      const group = { id: "c-" + slug(p.category || "other"), name: p.category || "Other", products: [], tint };
+      const key = slug(p.category || "other");
+      const group = { id: "c-" + key, key, name: p.category || "Other", products: [], tint };
       categories.set(p.category, group);
       groups.push(group);
       state.tints.set(p.category, tint);
@@ -185,14 +254,15 @@ function renderShop() {
   placeholder.disabled = true;
   picker.replaceChildren(placeholder);
   const sections = [];
-  for (const { id, name, products, tint } of groups) {
+  for (const { id, key, name, products, tint } of groups) {
     const mixed = id === "new";
 
     const link = document.createElement("a");
     link.className = "tape";
     link.href = "#" + id;
     link.textContent = name;
-    link.style.setProperty("--tint", tint);
+    link.dataset.category = key;
+    link.style.setProperty("--auto-tint", tint);
     const li = document.createElement("li");
     li.append(link);
     navList.append(li);
@@ -201,7 +271,8 @@ function renderShop() {
     const section = document.createElement("section");
     section.className = "category";
     section.id = id;
-    section.style.setProperty("--tint", tint);
+    section.dataset.category = key;
+    section.style.setProperty("--auto-tint", tint);
     section.setAttribute("aria-labelledby", id + "-h");
     const head = document.createElement("div");
     head.className = "category-head";
@@ -252,6 +323,7 @@ function productCard(p, showCategory = false) {
   fillSubline($(".product-desc", el), showCategory ? p.category : "", p.description);
   $(".price", el).textContent = peso(p.price);
   fillProduct(el, p);
+  emit("card", el, p);
   return el;
 }
 
@@ -295,7 +367,9 @@ function fillProduct(el, p) {
 
 function updateProduct(sku, keepFocus = true) {
   const active = document.activeElement;
-  for (const el of $$(`.product[data-sku="${CSS.escape(sku)}"]`, shop)) {
+  const els = $$(`.product[data-sku="${CSS.escape(sku)}"]`, shop);
+  for (const el of tracked) if (el.isConnected && el.dataset.sku === sku) els.push(el);
+  for (const el of els) {
     const step = keepFocus && active?.closest(".qty-slot") && el.contains(active)
       ? active.dataset.step || "1"
       : null;
@@ -307,6 +381,7 @@ function updateProduct(sku, keepFocus = true) {
 }
 
 function updateCartbar() {
+  requestPricing();
   const { items } = cartTotals();
   cartbar.hidden = items === 0;
   renderTotals();
@@ -315,6 +390,7 @@ function updateCartbar() {
   navCart.hidden = items === 0;
   $(".nav-cart-count", navCart).textContent = items;
   navCart.setAttribute("aria-label", `Review pre-order: ${plural(items, "item", "items")}`);
+  emit("cart");
 }
 
 function placeCartbar() {
@@ -335,6 +411,14 @@ function watchCartbar() {
     addEventListener("scroll", placeCartbar, { passive: true });
   }
   addEventListener("resize", placeCartbar);
+}
+
+function watchNavHeight() {
+  if (!("ResizeObserver" in window)) return;
+  const row = $(".tapes-row", nav);
+  new ResizeObserver(() => {
+    if (row.offsetHeight) document.documentElement.style.setProperty("--nav-h", `${row.offsetHeight}px`);
+  }).observe(row);
 }
 
 function watchMasthead() {
@@ -389,7 +473,8 @@ function renderLines(flagged = new Set()) {
   const sections = [...groups].map(([category, ul]) => {
     const section = document.createElement("section");
     section.className = "line-group";
-    section.style.setProperty("--tint", state.tints.get(category) || "var(--brand)");
+    section.dataset.category = slug(category || "other");
+    section.style.setProperty("--auto-tint", state.tints.get(category) || "var(--brand)");
     const h3 = document.createElement("h3");
     h3.className = "line-group-title";
     h3.textContent = category || "Other";
@@ -413,6 +498,7 @@ function cartLine(p, qty, flagged) {
     : `${peso(p.price)} each`;
   $(".line-qty", li).append(stepper(p.sku, qty, limitFor(p), p.name));
   $(".line-total", li).textContent = peso(p.price * qty);
+  emit("line", li, p);
   return li;
 }
 
@@ -427,13 +513,11 @@ function openOrder() {
   orderDialog.showModal();
 }
 
-// The shop's own links under the notes: [href, text] for a SETTINGS value.
 const HANDLE_LINK = {
   Instagram: (v) => [`https://www.instagram.com/${encodeURIComponent(v)}/`, "@" + v],
-  Messenger: (v) => (/^https:\/\//.test(v) ? [v, "Message us"] : [`https://m.me/${encodeURIComponent(v)}`, v]),
+  Messenger: (v) => (v.startsWith("https://") ? [v, "Message us"] : [`https://m.me/${encodeURIComponent(v)}`, v]),
 };
 
-/** Shows the filled-in handles in SETTINGS row order (pro sends no `handles`: Instagram only). */
 function applyHandles(data) {
   const box = $(".handles");
   const order = Array.isArray(data.handles) ? data.handles : ["Instagram"];
@@ -453,11 +537,9 @@ function applyHandles(data) {
   box.hidden = els.every((el) => el.hidden);
 }
 
-// The pro (Go) server doesn't send contactFields; it takes Email and Instagram.
 const DEFAULT_CONTACTS = ["Email", "Instagram"];
 const CONTACT_PHRASE = { Email: "email you", Messenger: "message you on Messenger", Instagram: "message you on Instagram" };
 
-/** Shows only the contact options the shop offers, in its order; one option needs no choice. */
 function applyContactFields(list) {
   const methods = (Array.isArray(list) ? list : DEFAULT_CONTACTS).filter((m) => m in CONTACT_PHRASE);
   if (!methods.length) methods.push(...DEFAULT_CONTACTS);
@@ -531,10 +613,9 @@ async function submitOrder(event) {
     email: f.contactVia.value === "Email" ? f.email.value : "",
     instagram: f.contactVia.value === "Instagram" ? f.instagram.value : "",
     mobile: f.mobile.value,
-    items: [...state.cart].map(([sku, quantity]) => ({ sku, quantity })),
+    items: cartItems(),
     website: f.website.value,
   };
-  // Only when chosen: the pro server rejects fields it doesn't know.
   if (body.contactVia === "Messenger") body.messenger = f.messenger.value;
 
   const button = $("button[type=submit]", form);
@@ -628,6 +709,7 @@ function closeShop(message) {
     $(".form-error", form).textContent = message;
     $("button[type=submit]", form).disabled = true;
   }
+  emit("closed", message);
 }
 
 let closeTimer = 0;
@@ -651,7 +733,7 @@ function applySettings(data) {
     root.setProperty("--brand", data.themeColor);
     root.setProperty("--on-brand", contrast(data.themeColor, "#ffffff") >= 4.5 ? "#ffffff" : "var(--on-light)");
   }
-  if (isHex(data.accentColor) && theme !== "dark") root.setProperty("--accent", data.accentColor); // chosen for white
+  if (isHex(data.accentColor) && theme !== "dark") root.setProperty("--accent", data.accentColor);
   $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
   if (isHex(data.submitColor)) {
     root.setProperty("--submit", data.submitColor);
@@ -696,7 +778,7 @@ async function loadShop() {
   }
   let data;
   try {
-    const [res, photos] = await Promise.all([api.shop(), photoManifest()]);
+    const [res, photos] = await Promise.all([api.shop(), photoManifest(), scriptsLoaded]);
     if (res.status !== 200) throw new Error(res.data.error);
     data = res.data;
     for (const p of data.products) {
@@ -711,7 +793,9 @@ async function loadShop() {
   state.bySku = new Map(data.products.map((p) => [p.sku, p]));
   reconcileCart();
   renderShop();
+  pricing.quote = null;
   updateCartbar();
+  emit("products");
 }
 
 function qtyClick(e) {
@@ -758,8 +842,64 @@ orderDialog.addEventListener("click", (e) => {
   if (e.target.closest("[data-close]") || e.target === orderDialog) orderDialog.close();
 });
 
+const hooks = { card: [], line: [], cart: [], products: [], closed: [] };
+const tracked = new Set();
+
+function emit(name, ...args) {
+  for (const fn of hooks[name]) {
+    try {
+      fn(...args);
+    } catch (err) {
+      console.error(`"${name}" hook failed`, err);
+    }
+  }
+}
+
+window.ShopPage = Object.freeze({
+  version: 1,
+  config: CONFIG,
+  on(name, fn) {
+    if (!hooks[name] || typeof fn !== "function") throw new Error(`ShopPage.on: unknown hook "${name}"`);
+    hooks[name].push(fn);
+  },
+  setPricing(fn) {
+    pricing.fn = typeof fn === "function" ? fn : null;
+    pricing.quote = null;
+    if (state.products.length) updateCartbar();
+  },
+  product: (sku) => state.bySku.get(sku),
+  qty: (sku) => state.cart.get(sku) || 0,
+  setQty,
+  qtyClick,
+  track(el) {
+    tracked.add(el);
+    const p = state.bySku.get(el.dataset.sku);
+    if (p) fillProduct(el, p);
+  },
+  fillSubline,
+  peso,
+});
+
+function loadScripts() {
+  const list = Array.isArray(CONFIG.scripts) ? CONFIG.scripts : [];
+  return Promise.all(list.map((src) => new Promise((resolve) => {
+    if (typeof src !== "string" || !/^[\w-][\w.-]*\.js$/.test(src)) {
+      console.error("config.js scripts: skipping", src);
+      return resolve();
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    script.onload = script.onerror = () => resolve();
+    document.head.append(script);
+  })));
+}
+
+const scriptsLoaded = loadScripts();
+
 loadCart();
-applyContactFields(); // until the settings arrive
+applyContactFields();
+watchNavHeight();
 watchMasthead();
 watchCartbar();
 loadShop();

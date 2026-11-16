@@ -1,9 +1,6 @@
-/* Base styles and the "art-crafts" theme. The "default" theme is at the end. */
 :root {
   color-scheme: light;
 
-  /* Each theme sets its own default --theme-brand; a shop's web/shop.css may set
-     --brand itself, and SETTINGS Primary Color overrides both. */
   --theme-brand: #f4a259;
   --theme-on-brand: var(--on-light);
   --brand: var(--theme-brand);
@@ -12,7 +9,7 @@
   --ink: color-mix(in oklch, var(--brand) 14%, #1e1b16);
   --ink-soft: color-mix(in oklch, var(--ink) 70%, #ffffff);
   --accent: color-mix(in oklch, var(--brand) 52%, #000000);
-  --on-light: var(--ink); /* dark text for light fills, whatever the theme */
+  --on-light: var(--ink);
   --on-brand: var(--theme-on-brand);
   --dot: color-mix(in oklch, var(--brand) 22%, #d9d6d0);
   --pattern: #d9d9d9;
@@ -40,8 +37,11 @@
 
   --gutter: 1rem;
   --measure: 72rem;
-  --nav-h: 3.5rem;
+  --nav-row: 3.5rem;
+  --nav-h: var(--nav-row);
 }
+
+:where(.tape, .category, .line-group) { --tint: var(--auto-tint); }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -179,7 +179,7 @@ u { text-underline-offset: 0.18em; }
 .tapes-row {
   display: flex;
   align-items: center;
-  min-height: var(--nav-h);
+  min-height: var(--nav-row);
   max-width: var(--measure);
   margin: 0 auto;
   padding-left: var(--gutter);
@@ -255,6 +255,9 @@ u { text-underline-offset: 0.18em; }
   scrollbar-width: none;
 }
 .tapes ul::-webkit-scrollbar { display: none; }
+@media (min-width: 52rem) {
+  .tapes ul { flex-wrap: wrap; row-gap: 0.35rem; overflow-x: visible; }
+}
 
 .tape,
 .category-head,
@@ -572,6 +575,19 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 }
 .line.flagged .line-sub { color: var(--gumamela); font-weight: 600; }
 
+.discounts { margin: 0.65rem 0 0; padding: 0; list-style: none; }
+.discounts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.discount-amount { white-space: nowrap; }
+
+.pending { opacity: 0.5; transition: opacity 0.15s; }
+
 .total {
   --tint: var(--brand);
   --tilt: -0.6deg;
@@ -699,11 +715,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 .site-footer a:hover { color: var(--dev-hover); }
 .site-footer a:focus-visible { outline-color: var(--dev-link); }
 
-/* ------------------------------------------------------------------ themes
-   The rules above are the "art-crafts" theme (washi tape, serif headings).
-   The "default" theme (SETTINGS Theme blank or "default") overrides them below:
-   clean, modern, one sans family. "dark" is the default layout in dark colors:
-   it shares these rules and then recolors. app.js sets <html data-theme>. */
 :root:is([data-theme="default"], [data-theme="dark"]) {
   --theme-brand: #2f62c8;
   --theme-on-brand: #ffffff;
@@ -723,7 +734,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 :is([data-theme="default"], [data-theme="dark"]) body::before,
 :is([data-theme="default"], [data-theme="dark"]) .tapes::before { display: none; }
 
-/* Masthead: left-aligned; the shop name is the one loud thing. */
 :is([data-theme="default"], [data-theme="dark"]) .masthead {
   display: grid;
   align-content: start;
@@ -768,7 +778,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
   :is([data-theme="default"], [data-theme="dark"]) .handles { grid-row: 3; }
 }
 
-/* Nav: plain text tabs; a category's color shows as a small swatch. */
 :is([data-theme="default"], [data-theme="dark"]) .tapes ul { gap: 0.25rem; padding: 0.5rem 0.75rem 0.5rem 0; }
 :is([data-theme="default"], [data-theme="dark"]) .tape,
 :is([data-theme="default"], [data-theme="dark"]) .category-head,
@@ -805,7 +814,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 }
 :is([data-theme="default"], [data-theme="dark"]) .nav-logo { font-weight: 700; font-stretch: 75%; font-size: 1.3rem; }
 
-/* Categories */
 :is([data-theme="default"], [data-theme="dark"]) .category { padding-top: 3rem; }
 :is([data-theme="default"], [data-theme="dark"]) .category-head {
   align-items: center;
@@ -821,7 +829,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 }
 :is([data-theme="default"], [data-theme="dark"]) .category-head p { color: var(--ink-soft); font-weight: 400; }
 
-/* Products: photo on a soft tile, text below with no box. */
 :is([data-theme="default"], [data-theme="dark"]) .photo {
   padding: 8%;
   background: var(--tile);
@@ -863,7 +870,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
   box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent);
 }
 
-/* Order sheet */
 :is([data-theme="default"], [data-theme="dark"]) .sheet h2 { font-weight: 650; font-size: 1.5rem; letter-spacing: -0.01em; }
 :is([data-theme="default"], [data-theme="dark"]) .line-group-title {
   display: flex;
@@ -884,9 +890,6 @@ dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); 
 :is([data-theme="default"], [data-theme="dark"]) #order-form .primary { font-family: var(--sans); font-weight: 600; font-size: 1.05rem; }
 :is([data-theme="default"], [data-theme="dark"]) .order-id { font-weight: 700; font-stretch: 75%; font-size: 3rem; letter-spacing: 0; }
 
-/* "dark": the default layout on a dark page. --brand stays a fill with dark text,
-   so a light or mid Primary Color works best. SETTINGS Accent Color is ignored
-   (it's chosen for white); --accent is the brand lightened instead. */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --paper: color-mix(in oklch, var(--brand) 3%, #141516);
