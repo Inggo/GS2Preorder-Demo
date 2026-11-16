@@ -25,7 +25,7 @@
   <header class="guide-hero">
     <p class="guide-kicker">For shop owners</p>
     <h1>Get your own pre-order shop</h1>
-    <p class="guide-lede">Your customers order on a simple website. Every order lands in a Google Sheet that you own. There's no app to learn, no monthly fee, and the site's hosting is free on GitHub.</p>
+    <p class="guide-lede">Your customers order on a simple website. Every order lands in a Google Sheet that you own. There's no app to learn, and the site's hosting is free on GitHub.</p>
     <p class="guide-meta">About 30–45 minutes of your time, spread over a few days.</p>
   </header>
 
@@ -102,21 +102,26 @@
         <h2><span class="step-no">4</span> Create your GitHub account</h2>
         <p>GitHub is where your website's files live. The free plan is all you need.</p>
         <ol class="steps">
-          <li>Go to <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</li>
+          <li>Go to <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>. You can click <strong>Continue with Google</strong> to sign up with your Gmail, or fill in the form below it.</li>
           <li>Enter your <strong>email</strong> and a <strong>password</strong>.</li>
           <li>
             Choose your <strong>username</strong>. Choose carefully, because it becomes part of your website's address:
             <p class="url-sample"><code>https://<mark>username</mark>.github.io/<span class="dim">repository</span>/</code></p>
             <ul>
               <li>Use something short that matches your shop, like <code>myshop</code> or <code>myshop-ph</code>.</li>
-              <li>Use lowercase letters, numbers and single hyphens only.</li>
+              <li>Use letters, numbers and single hyphens only, and don't start or end with a hyphen. Lowercase reads best in an address.</li>
               <li>You can change it later, but your website's address changes with it, and old links stop working.</li>
             </ul>
           </li>
-          <li>Solve the puzzle GitHub shows, then click <strong>Create account</strong>.</li>
+          <li>Check that <strong>Your Country/Region</strong> is right. The email updates box is optional.</li>
+          <li>Click <strong>Create account</strong>, then solve the puzzle GitHub shows.</li>
           <li>GitHub emails you a <strong>launch code</strong>. Type it in to verify your email. If you don't see it, check Spam and Promotions.</li>
           <li>If GitHub asks about your plans or team size, you can skip it. If asked to pick a plan, choose <strong>Free</strong>.</li>
         </ol>
+        <figure class="shot shot-narrow">
+          <a href="img/signup.png" target="_blank" rel="noopener"><img src="img/signup.png" width="515" height="830" loading="lazy" alt="GitHub's Sign up form, with the Username field highlighted"></a>
+          <figcaption>The sign-up form. Your username becomes part of your website's address.</figcaption>
+        </figure>
         <aside class="note">
           <strong>Two-factor authentication.</strong> GitHub may ask you to turn on a second login step (an authenticator app, a passkey, or a text message). Follow its prompts, and <strong>save the recovery codes</strong> it shows somewhere safe. They're the only way back in if you lose your phone.
         </aside>
@@ -126,20 +131,20 @@
         <h2><span class="step-no">5</span> Create the repository</h2>
         <p>A <em>repository</em> (“repo”) is a folder on GitHub that holds your website's files. It holds only the website's code, never your orders or customers. Those stay in your sheet.</p>
         <ol class="steps">
-          <li>Signed in to GitHub, click the <strong>+</strong> at the top right, then <strong>New repository</strong>.</li>
+          <li>Signed in to GitHub, click the <strong>+</strong> at the top right, then <strong>New repository</strong>.
+            <figure class="shot shot-small">
+              <a href="img/new-repo-menu.png" target="_blank" rel="noopener"><img src="img/new-repo-menu.png" width="341" height="323" loading="lazy" alt="The + menu open, with New repository highlighted"></a>
+            </figure>
+          </li>
           <li><strong>Owner</strong>: leave it as your username.</li>
-          <li><strong>Repository name</strong>: your shop's name in lowercase with hyphens, e.g. <code>myshop-preorder</code>. This is the last part of your website's address.</li>
-          <li>Choose <strong>Public</strong>. The free plan can only publish websites from public repositories.</li>
-          <li>Leave everything else <strong>off</strong>: no README, no .gitignore, no license. Your site's files come from me, and an extra file here gets in the way.</li>
+          <li><strong>Repository name</strong>: your shop's name in lowercase with hyphens, e.g. <code>myshop-preorder</code>. This is the last part of your website's address. Leave <strong>Description</strong> blank.</li>
+          <li><strong>Choose visibility</strong>: <strong>Public</strong>. The free plan can only publish websites from public repositories.</li>
+          <li>Leave the rest as it is: <strong>Add README</strong> off, <strong>No .gitignore</strong>, <strong>No license</strong>. Your site's files come from me, and an extra file here gets in the way.</li>
           <li>Click <strong>Create repository</strong>. You'll land on a page that says “Quick setup”. That's normal: the repo is empty until I upload the site.</li>
         </ol>
-        <figure class="mock" aria-label="Example of the New repository form">
-          <div class="mock-row"><span class="mock-label">Owner / Repository name</span><span class="mock-field">myshop / <b>myshop-preorder</b></span></div>
-          <div class="mock-row"><span class="mock-label">Visibility</span><span class="mock-field"><b>● Public</b>&nbsp;&nbsp;○ Private</span></div>
-          <div class="mock-row"><span class="mock-label">Add README</span><span class="mock-field">Off</span></div>
-          <div class="mock-row"><span class="mock-label">Add .gitignore</span><span class="mock-field">No .gitignore</span></div>
-          <div class="mock-row"><span class="mock-label">Add license</span><span class="mock-field">No license</span></div>
-          <figcaption>What the form should look like before you click Create repository</figcaption>
+        <figure class="shot">
+          <a href="img/new-repo-form.png" target="_blank" rel="noopener"><img src="img/new-repo-form.png" width="768" height="743" loading="lazy" alt="The Create a new repository form: Repository name, Public visibility and the Create repository button are highlighted; README is off, no .gitignore, no license"></a>
+          <figcaption>Type the name, keep it Public, leave the rest alone, then click Create repository.</figcaption>
         </figure>
       </section>
 
@@ -147,14 +152,34 @@
         <h2><span class="step-no">6</span> Add me as a collaborator</h2>
         <p>This lets me upload your website and keep it updated. You stay the owner and can remove me anytime.</p>
         <ol class="steps">
-          <li>In your new repository, click <strong>Settings</strong> (the tab with the gear, at the top of the repo page; on a phone it may be under the <strong>⋯</strong> menu).</li>
-          <li>In the left sidebar, under <strong>Access</strong>, click <strong>Collaborators</strong>.</li>
-          <li>GitHub may ask you to confirm your password or two-factor code. That's a normal safety check.</li>
-          <li>Click <strong>Add people</strong>.</li>
-          <li>Type <code>Inggo</code> and pick <strong>Inggo</strong> from the list.</li>
-          <li>Click <strong>Add Inggo to this repository</strong>.</li>
+          <li>In your new repository, click <strong>Settings</strong>, the last tab at the top of the repo page. On a narrow screen it may be under the <strong>⋯</strong> menu.
+            <figure class="shot">
+              <a href="img/settings-tab.png" target="_blank" rel="noopener"><img src="img/settings-tab.png" width="620" height="69" loading="lazy" alt="The repository tabs, with Settings highlighted"></a>
+            </figure>
+          </li>
+          <li>In the left sidebar, under <strong>Access</strong>, click <strong>Collaborators</strong>. GitHub may ask you to confirm your password or two-factor code first. That's a normal safety check.</li>
+          <li>Click <strong>Add people</strong>.
+            <figure class="shot">
+              <a href="img/collaborators.png" target="_blank" rel="noopener"><img src="img/collaborators.png" width="1289" height="575" loading="lazy" alt="The Collaborators and teams page: Collaborators in the sidebar and the Add people button are highlighted"></a>
+            </figure>
+          </li>
+          <li>In the <strong>Find people</strong> box, type <code>Inggo</code>.
+            <figure class="shot shot-medium">
+              <a href="img/add-people.png" target="_blank" rel="noopener"><img src="img/add-people.png" width="640" height="118" loading="lazy" alt="The Add people dialog, with an empty Find people search box"></a>
+            </figure>
+          </li>
+          <li>Pick me from the list. Before you click, check that it's really me: the username is exactly <strong>Inggo</strong>, with this picture.
+            <figure class="shot shot-medium">
+              <a href="img/add-people-inggo.png" target="_blank" rel="noopener"><img src="img/add-people-inggo.png" width="608" height="138" loading="lazy" alt="Search results for Inggo, showing the account Inggo with a profile picture and Invite collaborator"></a>
+            </figure>
+            Other accounts with similar names can show up too. If you're unsure, message me before you add anyone, and I'll confirm.
+          </li>
+          <li>Click <strong>Add to repository</strong>.</li>
         </ol>
-        <p>You'll then see me listed as <strong>Pending invite</strong>. That's all you need to do. It changes once I accept.</p>
+        <p>You'll then see me listed as <strong>Pending Invite</strong>, “Awaiting Inggo's response”. That's all you need to do. It changes once I accept.</p>
+        <figure class="shot">
+          <a href="img/pending-invite.png" target="_blank" rel="noopener"><img src="img/pending-invite.png" width="933" height="243" loading="lazy" alt="Manage access list showing Inggo with Pending Invite highlighted"></a>
+        </figure>
       </section>
 
       <section id="pages">
@@ -163,6 +188,10 @@
           <li>Still in <strong>Settings</strong>, click <strong>Pages</strong> in the left sidebar.</li>
           <li>Under <strong>Build and deployment ▸ Source</strong>, choose <strong>GitHub Actions</strong>.</li>
         </ol>
+        <figure class="shot">
+          <a href="img/pages-source.png" target="_blank" rel="noopener"><img src="img/pages-source.png" width="1280" height="560" loading="lazy" alt="The GitHub Pages settings page: Pages in the sidebar and Source set to GitHub Actions are highlighted"></a>
+          <figcaption>This is how it looks once the site is live. On a new repo the “Your site is live” box isn't there yet, and Source may say “Deploy from a branch” until you change it.</figcaption>
+        </figure>
         <p>If you don't see that option yet, skip this step for now and do it after I tell you the code is uploaded.</p>
         <aside class="note">
           <strong>Send me</strong> your GitHub <strong>username</strong> and <strong>repository name</strong> when you're done, e.g. “myshop / myshop-preorder”.
@@ -181,8 +210,8 @@
         <details>
           <summary>Questions owners usually ask</summary>
           <dl>
-            <dt>Does it cost anything?</dt>
-            <dd>Google Sheets, Apps Script and GitHub Pages are free for a shop this size.</dd>
+            <dt>Do I need to pay Google or GitHub?</dt>
+            <dd>No. Google Sheets, Apps Script and GitHub Pages are free for a shop this size.</dd>
             <dt>Can people see my orders on GitHub?</dt>
             <dd>No. The repository holds only the website's code. Orders and customer details go straight into your sheet, which only you (and anyone you share it with) can open.</dd>
             <dt>Why do I need to add you as a collaborator?</dt>
