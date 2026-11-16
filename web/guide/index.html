@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Get your own pre-order shop · GS2Preorder</title>
+  <meta name="description" content="How to set up your own Google-Sheets pre-order shop: copy the sheet, connect it, and create the GitHub home for your website.">
+  <meta name="theme-color" content="#fbfbfa">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Get your own pre-order shop">
+  <meta property="og:description" content="Run pre-orders from a Google Sheet, with a free website on GitHub.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Hanken+Grotesk:wght@400;600;700&family=Young+Serif&display=swap">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="guide.css">
+</head>
+<body class="guide">
+  <header class="guide-top">
+    <a class="guide-back" href="../">← Try the demo shop</a>
+  </header>
+
+  <header class="guide-hero">
+    <p class="guide-kicker">For shop owners</p>
+    <h1>Get your own pre-order shop</h1>
+    <p class="guide-lede">Your customers order on a simple website. Every order lands in a Google Sheet that you own. There's no app to learn, no monthly fee, and the site's hosting is free on GitHub.</p>
+    <p class="guide-meta">About 30–45 minutes of your time, spread over a few days.</p>
+  </header>
+
+  <main class="guide-body">
+    <nav class="guide-toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#need">What you need</a></li>
+        <li><a href="#details">Send your shop details</a></li>
+        <li><a href="#sheet">Copy and fill in the sheet</a></li>
+        <li><a href="#connect">Turn on the shop's connection</a></li>
+        <li><a href="#github">Create your GitHub account</a></li>
+        <li><a href="#repo">Create the repository</a></li>
+        <li><a href="#collab">Add me as a collaborator</a></li>
+        <li><a href="#pages">Turn on GitHub Pages</a></li>
+        <li><a href="#done">What happens next</a></li>
+      </ol>
+    </nav>
+
+    <article class="guide-content">
+      <section id="how">
+        <h2>How it works</h2>
+        <ul class="guide-flow">
+          <li><strong>Google Sheet</strong><span>Your products, prices, stock and settings. Orders are saved here.</span></li>
+          <li><strong>Apps Script</strong><span>A small program inside your sheet that connects it to the website. It runs as you.</span></li>
+          <li><strong>GitHub Pages</strong><span>Hosts the website for free, at an address like <code>yourname.github.io/myshop-preorder</code>.</span></li>
+        </ul>
+        <p>You own all three. I set things up and keep the website up to date. After that you run the shop from your sheet and never need to touch GitHub again.</p>
+      </section>
+
+      <section id="need">
+        <h2>What you need</h2>
+        <ol>
+          <li>A personal Google (Gmail) account</li>
+          <li>An email address for GitHub. It can be the same Gmail.</li>
+          <li>Your product photos (JPG, PNG, WebP or HEIC). If you want a watermark, add it before sending, because I don't add one.</li>
+          <li>Your shop logo (a PNG with a transparent background, if you have one) and your main brand color</li>
+        </ol>
+      </section>
+
+      <section id="details">
+        <h2><span class="step-no">1</span> Send your shop details</h2>
+        <p>Send me your <strong>shop name</strong>, <strong>logo</strong> and <strong>brand color</strong>. That's all for now. You type everything else into the sheet yourself.</p>
+      </section>
+
+      <section id="sheet">
+        <h2><span class="step-no">2</span> Copy and fill in the sheet</h2>
+        <ol class="steps">
+          <li>Open the <strong>copy link</strong> I send you and click <strong>Make a copy</strong>. You can rename it, e.g. “My Shop Pre-orders”.</li>
+          <li>Click <strong>Share</strong>, enter <code>inggo.espinosa@gmail.com</code>, choose <strong>Editor</strong>, and click <strong>Send</strong>.</li>
+          <li>Fill in the tabs. Grey columns fill themselves in, so never type in them.
+            <ul>
+              <li><strong>INVENTORY</strong>: one row per product (SKU, category, name, description, price, stock).</li>
+              <li><strong>SETTINGS</strong>: your tagline, Instagram/Messenger, closing date, alert email and theme.</li>
+              <li><strong>TEMPLATES</strong>: your payment and pickup/delivery details.</li>
+            </ul>
+          </li>
+          <li>Name each photo after its SKU (e.g. <code>stickers-001.jpg</code>) and send them to me as a zip or a Google Drive share.</li>
+        </ol>
+      </section>
+
+      <section id="connect">
+        <h2><span class="step-no">3</span> Turn on the shop's connection</h2>
+        <p>This lets the website read your products and save orders. It runs as <em>your</em> Google account, so you do this step yourself. I'll send you the detailed steps. In short:</p>
+        <ol class="steps">
+          <li>In your sheet, open <strong>Extensions ▸ Apps Script</strong>, then <strong>Deploy ▸ New deployment ▸ Web app</strong>. Set <em>Execute as</em> to <strong>Me</strong> and <em>Who has access</em> to <strong>Anyone</strong>.</li>
+          <li>Authorize it. Google warns that the app “isn't verified”. That's expected for a script that belongs only to your sheet: click <strong>Advanced ▸ Go to GS2Preorder (unsafe)</strong>.</li>
+          <li>Copy the <strong>Web app URL</strong> (it ends in <code>/exec</code>) and send it to me. It isn't a password.</li>
+        </ol>
+      </section>
+
+      <section id="github">
+        <h2><span class="step-no">4</span> Create your GitHub account</h2>
+        <p>GitHub is where your website's files live. The free plan is all you need.</p>
+        <ol class="steps">
+          <li>Go to <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</li>
+          <li>Enter your <strong>email</strong> and a <strong>password</strong>.</li>
+          <li>
+            Choose your <strong>username</strong>. Choose carefully, because it becomes part of your website's address:
+            <p class="url-sample"><code>https://<mark>username</mark>.github.io/<span class="dim">repository</span>/</code></p>
+            <ul>
+              <li>Use something short that matches your shop, like <code>myshop</code> or <code>myshop-ph</code>.</li>
+              <li>Use lowercase letters, numbers and single hyphens only.</li>
+              <li>You can change it later, but your website's address changes with it, and old links stop working.</li>
+            </ul>
+          </li>
+          <li>Solve the puzzle GitHub shows, then click <strong>Create account</strong>.</li>
+          <li>GitHub emails you a <strong>launch code</strong>. Type it in to verify your email. If you don't see it, check Spam and Promotions.</li>
+          <li>If GitHub asks about your plans or team size, you can skip it. If asked to pick a plan, choose <strong>Free</strong>.</li>
+        </ol>
+        <aside class="note">
+          <strong>Two-factor authentication.</strong> GitHub may ask you to turn on a second login step (an authenticator app, a passkey, or a text message). Follow its prompts, and <strong>save the recovery codes</strong> it shows somewhere safe. They're the only way back in if you lose your phone.
+        </aside>
+      </section>
+
+      <section id="repo">
+        <h2><span class="step-no">5</span> Create the repository</h2>
+        <p>A <em>repository</em> (“repo”) is a folder on GitHub that holds your website's files. It holds only the website's code, never your orders or customers. Those stay in your sheet.</p>
+        <ol class="steps">
+          <li>Signed in to GitHub, click the <strong>+</strong> at the top right, then <strong>New repository</strong>.</li>
+          <li><strong>Owner</strong>: leave it as your username.</li>
+          <li><strong>Repository name</strong>: your shop's name in lowercase with hyphens, e.g. <code>myshop-preorder</code>. This is the last part of your website's address.</li>
+          <li>Choose <strong>Public</strong>. The free plan can only publish websites from public repositories.</li>
+          <li>Leave everything else <strong>off</strong>: no README, no .gitignore, no license. Your site's files come from me, and an extra file here gets in the way.</li>
+          <li>Click <strong>Create repository</strong>. You'll land on a page that says “Quick setup”. That's normal: the repo is empty until I upload the site.</li>
+        </ol>
+        <figure class="mock" aria-label="Example of the New repository form">
+          <div class="mock-row"><span class="mock-label">Owner / Repository name</span><span class="mock-field">myshop / <b>myshop-preorder</b></span></div>
+          <div class="mock-row"><span class="mock-label">Visibility</span><span class="mock-field"><b>● Public</b>&nbsp;&nbsp;○ Private</span></div>
+          <div class="mock-row"><span class="mock-label">Add README</span><span class="mock-field">Off</span></div>
+          <div class="mock-row"><span class="mock-label">Add .gitignore</span><span class="mock-field">No .gitignore</span></div>
+          <div class="mock-row"><span class="mock-label">Add license</span><span class="mock-field">No license</span></div>
+          <figcaption>What the form should look like before you click Create repository</figcaption>
+        </figure>
+      </section>
+
+      <section id="collab">
+        <h2><span class="step-no">6</span> Add me as a collaborator</h2>
+        <p>This lets me upload your website and keep it updated. You stay the owner and can remove me anytime.</p>
+        <ol class="steps">
+          <li>In your new repository, click <strong>Settings</strong> (the tab with the gear, at the top of the repo page; on a phone it may be under the <strong>⋯</strong> menu).</li>
+          <li>In the left sidebar, under <strong>Access</strong>, click <strong>Collaborators</strong>.</li>
+          <li>GitHub may ask you to confirm your password or two-factor code. That's a normal safety check.</li>
+          <li>Click <strong>Add people</strong>.</li>
+          <li>Type <code>Inggo</code> and pick <strong>Inggo</strong> from the list.</li>
+          <li>Click <strong>Add Inggo to this repository</strong>.</li>
+        </ol>
+        <p>You'll then see me listed as <strong>Pending invite</strong>. That's all you need to do. It changes once I accept.</p>
+      </section>
+
+      <section id="pages">
+        <h2><span class="step-no">7</span> Turn on GitHub Pages</h2>
+        <ol class="steps">
+          <li>Still in <strong>Settings</strong>, click <strong>Pages</strong> in the left sidebar.</li>
+          <li>Under <strong>Build and deployment ▸ Source</strong>, choose <strong>GitHub Actions</strong>.</li>
+        </ol>
+        <p>If you don't see that option yet, skip this step for now and do it after I tell you the code is uploaded.</p>
+        <aside class="note">
+          <strong>Send me</strong> your GitHub <strong>username</strong> and <strong>repository name</strong> when you're done, e.g. “myshop / myshop-preorder”.
+        </aside>
+      </section>
+
+      <section id="done">
+        <h2>What happens next</h2>
+        <p>I will:</p>
+        <ul>
+          <li>upload the website and send you its link</li>
+          <li>place a test order, check that you can see it in your sheet, then delete it</li>
+          <li>walk you through handling an order, from <strong>Pending</strong> to <strong>Verified</strong> to <strong>Paid</strong></li>
+        </ul>
+        <p>After that you run everything from your sheet: add products, change prices, close orders. Updates to the website reach you automatically.</p>
+        <details>
+          <summary>Questions owners usually ask</summary>
+          <dl>
+            <dt>Does it cost anything?</dt>
+            <dd>Google Sheets, Apps Script and GitHub Pages are free for a shop this size.</dd>
+            <dt>Can people see my orders on GitHub?</dt>
+            <dd>No. The repository holds only the website's code. Orders and customer details go straight into your sheet, which only you (and anyone you share it with) can open.</dd>
+            <dt>Why do I need to add you as a collaborator?</dt>
+            <dd>So I can upload the site and send you fixes and new features without asking for your password. You can remove me under Settings ▸ Collaborators.</dd>
+            <dt>Can I use my own domain, like myshop.com?</dt>
+            <dd>Yes. GitHub Pages supports custom domains. Ask me once the site is live.</dd>
+          </dl>
+        </details>
+      </section>
+
+      <p class="guide-cta"><a class="guide-button" href="../">See the demo shop</a></p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>Designed &amp; Developed by <a href="https://inggo.dev" target="_blank" rel="noopener">Inggo</a></p>
+  </footer>
+</body>
+</html>
